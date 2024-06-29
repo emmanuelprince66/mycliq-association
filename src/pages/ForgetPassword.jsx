@@ -31,13 +31,11 @@ const ForgetPassword = () => {
     mutationFn: async (phone) => {
       console.log(phoneNo);
       try {
-        const response = await axios.post(
-          "https://check-server-api.herokuapp.com/api/v1/auth/request-otp",
-          {
-            phone: phone, // Replace with your phone data
-          }
-        );
-
+          const response = await BaseAxios({
+            url: "/auth/password-reset",
+            method: "POST",
+            phone: phone,
+          });
         return response.data;
       } catch (error) {
         console.log(error);
@@ -149,7 +147,7 @@ const ForgetPassword = () => {
 
       <Box
         sx={{
-          width: "90%",
+          width: "100%",
           mx: "auto",
           display: "flex",
           flexDirection: "column",
@@ -161,17 +159,17 @@ const ForgetPassword = () => {
         {" "}
         <TextField
           sx={{
-            width: { xs: "100%", sm: "100%", md: "500px" },
             mx: "auto",
+            width: "100%",
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
-                borderColor: `${textFour ? "#DC0019" : "#CACACA"}`, // Set the desired border color here
+                borderColor: "#CACACA", // Set the desired border color here
               },
               "&:hover fieldset": {
-                borderColor: `${textFour ? "#DC0019" : "#CACACA"}`, // Set the border color on hover here
+                borderColor: "#CACACA", // Set the border color on hover here
               },
               "&.Mui-focused fieldset": {
-                borderColor: `${textFour ? "#DC0019 " : "#C57600"}`, // Set the border color on focus here
+                borderColor: "#FF7F00", // Set the border color on focus here
               },
             },
           }}
@@ -206,13 +204,13 @@ const ForgetPassword = () => {
           disabled={disableButton || mutationOTP.isLoading}
           onClick={handleGetOTP}
           sx={{
-            background: "#dc0019",
+            background: "#333333",
             padding: "10px",
             borderRadius: "8px",
-            width: { xs: "90%", sm: "41%", lg: "77%" },
+            width: "100%",
             color: "#fff",
             "&:hover": {
-              backgroundColor: "#dc0019",
+              backgroundColor: "#333333",
             },
             textTransform: "capitalize",
             fontWeight: "500",

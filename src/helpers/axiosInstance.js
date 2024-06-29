@@ -1,11 +1,13 @@
 import Axios from "axios";
 
 export const AuthAxios = Axios.create({
-  baseURL: "https://check-server-api-staging.herokuapp.com/api/v1",
+  baseURL: "https://mycliq-backend.onrender.com/api/",
   withCredentials: false,
 });
+
+// Axios instance for authentication related calls
 export const BaseAxios = Axios.create({
-  baseURL: "https://check-server-api-staging.herokuapp.com/api/v1",
+  baseURL: "https://mycliq-backend.onrender.com/api/",
   withCredentials: false,
 });
 

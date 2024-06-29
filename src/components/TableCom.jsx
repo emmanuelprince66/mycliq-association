@@ -252,7 +252,7 @@ const TableCom = () => {
               }}
             >
               {totalDeposits === null ? (
-                <CircularProgress size="1.2rem" sx={{ color: "#DC0019" }} />
+                <CircularProgress size="1.2rem" sx={{ color: "#ff7f00" }} />
               ) : (
                 <FormattedPrice amount={totalDeposits} />
               )}

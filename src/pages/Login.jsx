@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import { useState } from "react";
+import cliqLight from "../assets/images/admin/cliqLight.png";
 
 import {
   Button,
@@ -42,8 +43,8 @@ export const Login = () => {
   const theme = createTheme({
     palette: {
       primary: {
-        main: Colors.brown_2,
-        red_text: Colors.error_2,
+        main: "#333333",
+        red_text: "#FF7F00",
       },
     },
   });
@@ -76,10 +77,8 @@ export const Login = () => {
     onSuccess: (data) => {
       console.log("Login successful:", data);
       navigate("/transaction");
-      localStorage.setItem("authToken", data.access_token);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("companyName", data.companyName);
-      localStorage.setItem("registeredName", data.registeredName);
+       Cookies.set("authToken", data?.data?.data?.access_token);
+       Cookies.set("refreshToken", data?.data?.data?.refreshToken);
       // Handle success, update state, or perform further actions
     },
     onError: (error) => {
@@ -113,8 +112,8 @@ export const Login = () => {
         </div>
       </section>
       <section className="flex min-h-screen  w-full gap-8 flex-col m-auto bg-dark_text">
-        <div className="logo h-[10vh] w-[90%] mx-auto py-4">
-          <img src={checkIcon} alt="check_logo" />
+        <div className="logo h-[5vh] w-[50%] mx-auto  mb-5 mt-4">
+          <img src={cliqLight} alt="check_logo" />
         </div>
 
         <div className=" w-[80%] md:w-[75%] lg:w-[65%] my-8 mx-auto flex items-center">
@@ -127,7 +126,12 @@ export const Login = () => {
                 alignItems: "center",
               }}
             >
-              <Typography variant="h1" fontSize={"1.5em"} fontWeight={600}>
+              <Typography
+                variant="h1"
+                fontSize={"1.5em"}
+                className="mb-3"
+                fontWeight={600}
+              >
                 Welcome back!
               </Typography>
               <Typography
@@ -174,6 +178,18 @@ export const Login = () => {
                         sx={{
                           "& .MuiInputBase-root": { borderRadius: "8px" },
                           "& .MuiInputBase-input": { padding: "12px 0" },
+
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                              borderColor: "#CACACA", // Set the desired border color here
+                            },
+                            "&:hover fieldset": {
+                              borderColor: "#CACACA", // Set the border color on hover here
+                            },
+                            "&.Mui-focused fieldset": {
+                              borderColor: "#FF7F00", // Set the border color on focus here
+                            },
+                          },
                         }}
                         id="email"
                         autoFocus
@@ -222,6 +238,17 @@ export const Login = () => {
                         sx={{
                           "& .MuiInputBase-root": { borderRadius: "8px" },
                           "& .MuiInputBase-input": { padding: "12px 0" },
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                              borderColor: "#CACACA", // Set the desired border color here
+                            },
+                            "&:hover fieldset": {
+                              borderColor: "#CACACA", // Set the border color on hover here
+                            },
+                            "&.Mui-focused fieldset": {
+                              borderColor: "#FF7F00", // Set the border color on focus here
+                            },
+                          },
                         }}
                         className="rounded-[8px]"
                         id="password"

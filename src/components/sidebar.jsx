@@ -7,6 +7,8 @@ import WithdrawalIcon from "../assets/images/sidebar/withdrawal";
 import TransactionIcon from "../assets/images/sidebar/transactionIcon";
 import SuperAdmin from "../assets/images/sidebar/super";
 import SupportIcon from "../assets/images/sidebar/support";
+import cliqIcon from "../assets/images/admin/cliqIcon.png";
+
 import Mode from "../assets/images/sidebar/mode";
 import SunIcon from "../assets/images/ColorMode/sun.svg";
 import checkIcon from "../assets/images/logo.png";
@@ -72,13 +74,13 @@ export const Sidebar = () => {
   }
   return (
     <aside className="flex h-full pl-[2em] py-[3em]  border-r border-border_light pr-[1em] flex-col bg-white">
-      <img src={checkIcon} className="w-[100px] mb-5 " alt="check icon" />
+      <img src={cliqIcon} className="w-[100px] mt-[-40px] " alt="check icon" />
 
       <div className="pt-5 pb-3  border-b border-solid ">
         <div
           className={`${
             location === "/overview"
-              ? "bg-primary_red_2 text-white"
+              ? "bg-brown_1 text-white"
               : "bg-transparent text-grey_2"
           } p-2 w-full  rounded-[10px]`}
         >
@@ -98,7 +100,7 @@ export const Sidebar = () => {
                 key={item.name}
                 className={`${
                   location === `/${item.link}`
-                    ? "bg-primary_red_2 text-white"
+                    ? "bg-brown_1 text-white"
                     : "bg-transparent text-grey_2"
                 } p-2 w-full mb-2  rounded-[10px]`}
               >
@@ -123,7 +125,7 @@ export const Sidebar = () => {
                 key={item.name}
                 className={`${
                   location === `/${item.link}`
-                    ? "bg-primary_red_2 text-white"
+                    ? "bg-brown_1 text-white"
                     : "bg-transparent text-grey_2"
                 } p-2 w-full mb-2 rounded-[10px]`}
               >
@@ -156,7 +158,7 @@ export const Sidebar = () => {
                 src={SunIcon}
                 className={`cursor-pointer h-[20px] ${
                   theme === "dark"
-                    ? "bg-primary_red_2 dark:bg-dark_primary p-2 rounded-[50%]"
+                    ? "bg-brown_1 dark:bg-dark_primary p-2 rounded-[50%]"
                     : ""
                 }`}
               />

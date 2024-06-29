@@ -10,7 +10,7 @@ export default {
         primary_red_1: "#FFEBED",
         brown_3: "#A86500",
         brown_2: "#C57600",
-        brown_1: "#FFEFD6",
+        brown_1: "#333333",
         blue_3: "#1367D8",
         blue_2: "#2F80ED",
         blue_1: "#EBF3FF",
