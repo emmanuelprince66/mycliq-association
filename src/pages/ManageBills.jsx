@@ -15,6 +15,7 @@ const Item = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
   borderRadius: "8px",
   height: "100vh",
+  overflowY: "auto",
 }));
 
 const ManageBills = () => {

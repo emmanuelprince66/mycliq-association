@@ -35,6 +35,9 @@ const CreateBill = () => {
   const [pickedDate, setPickedDate] = useState(new Date());
   const [dateToBeSent, setDateToBeSent] = useState(new Date());
   const [billName, setBillName] = useState("");
+  const [billersName, setBillersName] = useState("");
+  const [facultyName, setFacultyName] = useState("");
+  const [departmentName, setDepartmentName] = useState("");
   const [fresherAmount, setFresherAmount] = useState("");
   const [staylitesAmount, setStaylitesAmount] = useState("");
   const [focusBorder, setFocusBorder] = useState("");
@@ -53,24 +56,38 @@ const CreateBill = () => {
   const createBill = async () => {
     setLoading(true);
     try {
-      const form = {
+      const payload = {
         billName: formContent.billName,
-        fresherAmount: Number(formContent.fresherAmount),
-        staliteAmount: Number(formContent.stayliteAmount),
-        expiryDate: pickedDate,
+        faculty: formContent.facultyName,
+        department: formContent.departmentName,
+        billerName: formContent.billersName,
+        prices: [
+          {
+            type: "fresher",
+            value: Number(formContent.fresherAmount),
+          },
+          {
+            type: "staylite",
+            value: Number(formContent.stayliteAmount),
+          },
+        ],
       };
-      const response = await AuthAxios.post("association-bill/add", form);
+      console.log("payload", payload);
+      const response = await AuthAxios.post(
+        "merchant/bill/association",
+        payload
+      );
       console.log(response);
-      if (response.status === 201) {
-        setOpen1(true);
-        setOpen2(false);
-        reset();
-        setLoading(false)
-        setPickedDate(new Date())
-      }
+      // if (response.status === 201) {
+      //   setOpen1(true);
+      //   setOpen2(false);
+      //   reset();
+      //   setLoading(false);
+      //   setPickedDate(new Date());
+      // }
     } catch (error) {
       console.log(error);
-      setLoading(false)
+      setLoading(false);
     }
   };
   const {
@@ -132,6 +149,231 @@ const CreateBill = () => {
         className=" w-full md:w-4/5 lg:w-3/5 m-auto"
       >
         <Box>
+          <Stack>
+            <Box
+              sx={{
+                textAlign: "left",
+                mb: "1rem",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: "4px",
+                }}
+              >
+                <Typography
+                  htmlFor="input"
+                  sx={{
+                    fontWeight: 600,
+                    marginBottom: "1ch",
+                    fontSize: "16px",
+                    color: "#1E1E1E",
+                    mb: "10px",
+                  }}
+                >
+                  Billers Name
+                </Typography>
+                <Box
+                  sx={{
+                    color: "#C57600",
+                    fontWeight: 600,
+                    ml: "-0.2rem",
+                  }}
+                >
+                  *
+                </Box>
+              </Box>
+
+              <TextField
+                {...register("billersName", {
+                  required: "billersName is required",
+                })}
+                sx={{
+                  width: "100%",
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "#CACACA", // Set the desired border color here
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#CACACA", // Set the border color on hover here
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#C57600", // Set the border color on focus here
+                    },
+                  },
+                }}
+                required
+                placeholder="Enter  billers name"
+                variant="outlined"
+                id="email-input"
+                onChange={(e) => setBillersName(e)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment>
+                      <ReceiptLongRoundedIcon /> &nbsp;&nbsp;
+                      <img src={seperator} alt="s-icon" />
+                      &nbsp;&nbsp;
+                    </InputAdornment>
+                  ),
+                }}
+                aria-describedby="outlined-weight-helper-text"
+                inputProps={{
+                  "aria-label": "weight",
+                }}
+              />
+            </Box>
+          </Stack>
+          <Stack>
+            <Box
+              sx={{
+                textAlign: "left",
+                mb: "1rem",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: "4px",
+                }}
+              >
+                <Typography
+                  htmlFor="input"
+                  sx={{
+                    fontWeight: 600,
+                    marginBottom: "1ch",
+                    fontSize: "16px",
+                    color: "#1E1E1E",
+                    mb: "10px",
+                  }}
+                >
+                  Faculty Name
+                </Typography>
+                <Box
+                  sx={{
+                    color: "#C57600",
+                    fontWeight: 600,
+                    ml: "-0.2rem",
+                  }}
+                >
+                  *
+                </Box>
+              </Box>
+
+              <TextField
+                {...register("facultyName", {
+                  required: "Faculty name is required",
+                })}
+                sx={{
+                  width: "100%",
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "#CACACA", // Set the desired border color here
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#CACACA", // Set the border color on hover here
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#C57600", // Set the border color on focus here
+                    },
+                  },
+                }}
+                required
+                placeholder="Enter faculty name"
+                variant="outlined"
+                id="email-input"
+                onChange={(e) => setFacultyName(e)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment>
+                      <ReceiptLongRoundedIcon /> &nbsp;&nbsp;
+                      <img src={seperator} alt="s-icon" />
+                      &nbsp;&nbsp;
+                    </InputAdornment>
+                  ),
+                }}
+                aria-describedby="outlined-weight-helper-text"
+                inputProps={{
+                  "aria-label": "weight",
+                }}
+              />
+            </Box>
+          </Stack>
+          <Stack>
+            <Box
+              sx={{
+                textAlign: "left",
+                mb: "1rem",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: "4px",
+                }}
+              >
+                <Typography
+                  htmlFor="input"
+                  sx={{
+                    fontWeight: 600,
+                    marginBottom: "1ch",
+                    fontSize: "16px",
+                    color: "#1E1E1E",
+                    mb: "10px",
+                  }}
+                >
+                  Department Name
+                </Typography>
+                <Box
+                  sx={{
+                    color: "#C57600",
+                    fontWeight: 600,
+                    ml: "-0.2rem",
+                  }}
+                >
+                  *
+                </Box>
+              </Box>
+
+              <TextField
+                {...register("departmentName", {
+                  required: "Department name is required",
+                })}
+                sx={{
+                  width: "100%",
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "#CACACA", // Set the desired border color here
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#CACACA", // Set the border color on hover here
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#C57600", // Set the border color on focus here
+                    },
+                  },
+                }}
+                required
+                placeholder="Enter department name"
+                variant="outlined"
+                id="email-input"
+                onChange={(e) => setDepartmentName(e)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment>
+                      <ReceiptLongRoundedIcon /> &nbsp;&nbsp;
+                      <img src={seperator} alt="s-icon" />
+                      &nbsp;&nbsp;
+                    </InputAdornment>
+                  ),
+                }}
+                aria-describedby="outlined-weight-helper-text"
+                inputProps={{
+                  "aria-label": "weight",
+                }}
+              />
+            </Box>
+          </Stack>
           <Stack>
             <Box
               sx={{
@@ -206,6 +448,7 @@ const CreateBill = () => {
               />
             </Box>
           </Stack>
+
           <Stack
             spacing={{ xs: 1, sm: 2 }}
             direction="row"
@@ -214,7 +457,7 @@ const CreateBill = () => {
           >
             <Box
               sx={{
-                width: "280px",
+                width: "100%",
                 mt: "1rem",
               }}
             >
@@ -300,7 +543,7 @@ const CreateBill = () => {
             </Box>
             <Box
               sx={{
-                width: "280px",
+                width: "100%",
                 mt: "1rem",
               }}
             >
@@ -386,7 +629,7 @@ const CreateBill = () => {
             </Box>
             {/* <Item>Item 2</Item> */}
           </Stack>
-          <Stack>
+          {/* <Stack>
             <Box
               sx={{
                 display: "flex",
@@ -424,7 +667,7 @@ const CreateBill = () => {
                 />
               </div>
             </div>
-          </Stack>
+          </Stack> */}
         </Box>
 
         <Box
@@ -541,7 +784,8 @@ const CreateBill = () => {
                 lineHeight: "24px",
               }}
             >
-              Are you sure you want to create the new bill {`"${formContent.billName}"`}?
+              Are you sure you want to create the new bill{" "}
+              {`"${formContent.billName}"`}?
             </Typography>
 
             <Box

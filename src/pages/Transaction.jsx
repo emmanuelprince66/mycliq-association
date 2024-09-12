@@ -12,6 +12,7 @@ import { fillSelectedDates } from "../utils/store/merchantSlice";
 import { fillUserDetails } from "../utils/store/merchantSlice";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import { useSelector } from "react-redux";
+import { getCookie } from "../utils/cookieAuth";
 const Transaction = () => {
   const [dateVisible, setDateVisible] = useState(false);
   const [selectedRange, setSelectedRange] = useState({

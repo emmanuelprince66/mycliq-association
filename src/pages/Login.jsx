@@ -65,7 +65,7 @@ export const Login = () => {
           data: formData,
         });
 
-        if (response.status !== 200) {
+        if (response.status !== 201) {
           throw new Error(response.data.message);
         }
         return response.data;
@@ -75,10 +75,9 @@ export const Login = () => {
       }
     },
     onSuccess: (data) => {
-      console.log("Login successful:", data);
-      navigate("/transaction");
-       Cookies.set("authToken", data?.data?.data?.access_token);
-       Cookies.set("refreshToken", data?.data?.data?.refreshToken);
+      navigate("/overview");
+      Cookies.set("authToken", data?.data?.access_token);
+      Cookies.set("refreshToken", data?.data?.refreshToken);
       // Handle success, update state, or perform further actions
     },
     onError: (error) => {
@@ -97,7 +96,6 @@ export const Login = () => {
 
   const onSubmit = (formData) => {
     // Handle form submission here
-    console.log("Form data:", formData);
 
     setButtonDisabled(true);
 
@@ -170,7 +168,7 @@ export const Login = () => {
                         </Typography>{" "}
                       </InputLabel>
                       <TextField
-                        {...register("emailOrPhone", {
+                        {...register("email", {
                           required: "Email is required",
                         })}
                         required
@@ -299,7 +297,7 @@ export const Login = () => {
                     justifyContent="space-between"
                     alignItems="center"
                   >
-                    <Grid item>
+                    {/* <Grid item>
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -309,7 +307,7 @@ export const Login = () => {
                         }
                         label="Remember Me"
                       />
-                    </Grid>
+                    </Grid> */}
                     <Grid item>
                       <Typography
                         onClick={() => navigate("/f-password")}
