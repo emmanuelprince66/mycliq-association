@@ -1,14 +1,24 @@
 import Axios from "axios";
 import { getCookie, setCookie } from "../utils/cookieAuth";
 
+// export const AuthAxios = Axios.create({
+//   baseURL: "https://mycliq-backend-prod-a.onrender.com/api",
+//   withCredentials: false,
+// });
+
 export const AuthAxios = Axios.create({
-  baseURL: "https://mycliq-backend-prod-a.onrender.com/api",
+  baseURL: "https://mycliq-prod-e2c876691052.herokuapp.com/api",
   withCredentials: false,
 });
 
 // Axios instance for authentication related calls
+// export const BaseAxios = Axios.create({
+//   baseURL: "https://mycliq-backend-prod-a.onrender.com/api",
+//   withCredentials: false,
+// });
+
 export const BaseAxios = Axios.create({
-  baseURL: "https://mycliq-backend-prod-a.onrender.com/api",
+  baseURL: "https://mycliq-prod-e2c876691052.herokuapp.com/api",
   withCredentials: false,
 });
 
@@ -18,8 +28,6 @@ let refreshSubscribers = [];
 // Function to refresh the access token using the refresh token
 async function refreshToken() {
   const refreshToken = getCookie("refreshToken");
-
-  console.log(refreshToken);
 
   if (
     typeof refreshToken !== "string" ||
@@ -81,7 +89,7 @@ AuthAxios.interceptors.response.use(
           .catch((refreshError) => {
             console.error("Token refresh failed:", refreshError);
             isRefreshing = false;
-            // window.location.href = "/";
+            window.location.href = "/";
             throw refreshError;
           });
       }

@@ -23,19 +23,6 @@ const Transaction = () => {
   const dispatch = useDispatch();
   const { selectedDates } = useSelector((state) => state);
 
-  useEffect(() => {
-    async function getUserDetails() {
-      try {
-        const response = await AuthAxios.get("/user");
-        console.log(response);
-        dispatch(fillUserDetails(response.data));
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getUserDetails();
-  }, [dispatch]);
-
   function handleSelect(ranges) {
     const dateRange = {
       startDate: ranges.selection.startDate,

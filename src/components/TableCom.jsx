@@ -106,7 +106,7 @@ const TableCom = () => {
     const fetchData = async () => {
       try {
         const response = await AuthAxios({
-          url: "/transaction/merchant?limit=200",
+          url: "/merchant/trx",
           method: "GET",
         });
 
