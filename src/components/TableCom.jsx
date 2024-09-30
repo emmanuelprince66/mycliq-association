@@ -552,7 +552,7 @@ const TableCom = () => {
         >
           <TransactionDetails
             handleClose1={handleClose1}
-            details={transactionData[index]}
+            details={trxData?.records[index]}
           />
         </Modal>
         {/* Modal ends */}
