@@ -41,6 +41,7 @@ import fup from "../assets/fup.svg";
 import { useSelector } from "react-redux";
 import fbook from "../assets/fbook.svg";
 import { useDispatch } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
   saveTransactionData,
@@ -58,6 +59,7 @@ const TableCom = () => {
   const [open1, setOpen1] = React.useState(false);
   const [data, setData] = useState({});
   const handleClose1 = () => setOpen1(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [totalDeposits, setTotalDeposits] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -99,84 +101,30 @@ const TableCom = () => {
     setPage(0);
   };
 
-  const dispatch = useDispatch();
-  const { transactionDetails } = useSelector((state) => state);
+  const fetchTrxData = async ({ queryKey }) => {
+    const [_key, { page, limit }] = queryKey;
+    try {
+      const response = await AuthAxios.get(
+        `/merchant/trx?page=${page}&limit=${limit}&type=user`
+      );
+      return response?.data?.data;
+    } catch (error) {
+      throw new Error("Failed to fetch customer data");
+    }
+  };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await AuthAxios({
-          url: "/merchant/trx",
-          method: "GET",
-        });
+  const {
+    data: trxData,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["trxData", { page: currentPage, limit: rowsPerPage }],
+    queryFn: fetchTrxData,
+    keepPreviousData: true,
+    staleTime: 5000, // Cache data for 5 seconds
+  });
 
-        if (response) {
-          console.log(response);
-          setLoading(false);
-
-          // const paidData = response?.data?.queryResult.filter(
-          //   (item) => item?.remittance?.paymentStatus === "PAID"
-          // );
-          // setPaidDataState(paidData.length);
-
-          // const verifiedData = response?.data?.queryResult.filter(
-          //   (item) => item?.remittance?.paymentStatus === "VERIFIED"
-          // );
-          // setVerifiedDataState(verifiedData.length);
-
-          let filteredItems = response.data?.queryResult;
-
-          // Filter by name (if searchTerm exists)
-          if (searchTerm) {
-            filteredItems = filteredItems.filter((item) => {
-              return (
-                item.transferFrom.firstName
-                  .toLowerCase()
-                  .includes(searchTerm.toLowerCase()) ||
-                item.transferFrom.lastName
-                  .toLowerCase()
-                  .includes(searchTerm.toLowerCase())
-              );
-            });
-          }
-
-          // Filter by date range (if selectedDates exist)
-          if (selectedDates) {
-            const startDate = new Date(selectedDates.startDate);
-            const endDate = new Date(selectedDates.endDate);
-            endDate.setDate(endDate.getDate() + 1); // Increment by 1 day to include the end date
-
-            filteredItems = filteredItems.filter((item) => {
-              const createdAt = new Date(item?.createdAt);
-
-              return (
-                createdAt >= startDate && createdAt < endDate // Inclusive of start and end dates
-              );
-            });
-          }
-
-          setTransactionData(filteredItems);
-          dispatch(saveTransactionData(response?.data));
-        }
-      } catch (error) {
-        console.log(error);
-        if (error.response && error.response.status === 401) {
-          navigate("/");
-          localStorage.clear();
-        }
-      }
-    };
-
-    fetchData();
-  }, [dispatch, searchTerm, selectedDates]);
-
-  useEffect(() => {
-    const amtOfTotalDeposit = transactionData.reduce(
-      (prev, curr) => prev + JSON.parse(curr.amount),
-      0
-    );
-    setTotalDeposits(amtOfTotalDeposit);
-  }, [transactionData, totalDeposits]);
+  console.log("trx", trxData);
 
   async function viewDetails(i) {
     setOpen1(true);
@@ -185,7 +133,7 @@ const TableCom = () => {
   return (
     <Box
       sx={{
-        width: "1080px",
+        width: "100%",
         margin: "auto",
         padding: "1rem",
         backgroundColor: "#fffcfc",
@@ -212,7 +160,7 @@ const TableCom = () => {
             display: "flex",
             flexDirection: "column",
             padding: "16px",
-            width: "356px",
+            width: "100%",
             gap: "0.8rem",
           }}
         >
@@ -251,11 +199,11 @@ const TableCom = () => {
                 color: "#1E1E1E",
               }}
             >
-              {totalDeposits === null ? (
+              {/* {totalDeposits === null ? (
                 <CircularProgress size="1.2rem" sx={{ color: "#ff7f00" }} />
               ) : (
                 <FormattedPrice amount={totalDeposits} />
-              )}
+              )} */}
             </Typography>
           </Box>
         </Card>
@@ -264,7 +212,7 @@ const TableCom = () => {
             display: "flex",
             flexDirection: "column",
             padding: "16px",
-            width: "356px",
+            width: "100%",
             gap: "0.8rem",
           }}
         >
@@ -327,7 +275,7 @@ const TableCom = () => {
                 color: "##1E1E1E",
               }}
             >
-              <FormattedPrice amount={transactionDetails.outflow} />
+              {/* <FormattedPrice amount={transactionDetails.outflow} /> */}
             </Typography>
           </Box>
         </Card>
@@ -336,7 +284,7 @@ const TableCom = () => {
             display: "flex",
             flexDirection: "column",
             padding: "16px",
-            width: "356px",
+            width: "100%",
             gap: "0.8rem",
           }}
         >
@@ -376,9 +324,9 @@ const TableCom = () => {
                 color: "##1E1E1E",
               }}
             >
-              <FormattedPrice
+              {/* <FormattedPrice
                 amount={Number(transactionDetails?.walletBalance || 0)}
-              />
+              /> */}
             </Typography>
           </Box>
         </Card>
@@ -386,9 +334,8 @@ const TableCom = () => {
 
       <Box
         sx={{
-          width: "1080px",
+          width: "100%",
           margin: "auto",
-          padding: "1rem",
           backgroundColor: "#fff",
         }}
       >
@@ -468,7 +415,7 @@ const TableCom = () => {
                     </TableCell>
                   </TableRow>
                 ))} */}
-              {loading ? (
+              {isLoading ? (
                 <TableRow>
                   <CircularProgress
                     size="4.2rem"
@@ -479,49 +426,73 @@ const TableCom = () => {
                     }}
                   />
                 </TableRow>
-              ) : transactionData.length > 0 ? (
-                transactionData.map((item, i) => (
+              ) : trxData?.records?.length > 0 ? (
+                trxData?.records?.map((item, i) => (
                   <TableRow key={item.id}>
                     <TableCell>{i + 1}</TableCell>
                     <TableCell>{` ID:${item.id.slice(1, 12)}`}</TableCell>
                     <TableCell>
-                      {item.transferFrom.firstName} {item.transferFrom.lastName}
+                      {item?.type === "transfer" ||
+                      item?.type === "reversal" ||
+                      item?.type === "payment"
+                        ? item?.origin?.accountName
+                        : item?.recipientDetails?.accountName}
                     </TableCell>
-                    <TableCell>{item.transactionType}</TableCell>
-                    <TableCell>{item.amount}</TableCell>
+                    <TableCell>{item?.type}</TableCell>
+                    <TableCell>{item?.amount}</TableCell>
                     <TableCell>
-                      {" "}
                       <Box
                         sx={{
                           textTransform: "capitalize",
                           background:
-                            item?.remittance?.paymentStatus === "PAID"
+                            item?.status === "failed"
+                              ? "#FFF0F0"
+                              : item.status === "success"
                               ? "#EBFFF3"
-                              : "#EBF3FF",
+                              : item?.status === "pending" ||
+                                item?.status === "incoming"
+                              ? "#FFF0F0"
+                              : "",
                           color:
-                            item?.remittance?.paymentStatus === "PAID"
+                            item?.status === "failed"
+                              ? "#E52929"
+                              : item.status === "success"
                               ? "#1E854A"
-                              : "#1367D8",
-                          width:
-                            item?.remittance?.paymentStatus === "PAID"
-                              ? "67px"
-                              : "87px",
+                              : item?.status === "pending" ||
+                                item?.status === "incoming"
+                              ? "#CDA11E"
+                              : "",
                           fontWeight: "500",
                           fontSize: "12px",
-                          padding: "4px 8px 4px 8px",
+                          padding: "4px 8px",
                           borderRadius: "8px",
                           display: "flex",
-                          minWidth: "fit-content",
+                          justifyContent: "center",
                           alignItems: "center",
                           gap: "5px",
                           border: "1px solid #E0E0E0",
                         }}
                       >
-                        <CheckCircleOutlineRoundedIcon
-                          sx={{ fontSize: "12px" }}
-                        />{" "}
-                        {item?.remittance?.paymentStatus === "PAID" &&
-                          "Sucessfull"}
+                        {item?.status === "failed" && (
+                          <ReportOutlinedIcon sx={{ fontSize: "12px" }} />
+                        )}
+                        {item?.status === "success" && (
+                          <CheckCircleOutlineRoundedIcon
+                            sx={{ fontSize: "12px" }}
+                          />
+                        )}
+                        {item?.status === "incoming" && (
+                          <HourglassBottomOutlinedIcon
+                            sx={{ fontSize: "12px" }}
+                          />
+                        )}
+                        {item?.status === "pending" && (
+                          <HourglassBottomOutlinedIcon
+                            sx={{ fontSize: "12px" }}
+                          />
+                        )}
+
+                        {item?.status}
                       </Box>
                     </TableCell>
                     <TableCell>

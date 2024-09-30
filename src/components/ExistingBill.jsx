@@ -141,7 +141,7 @@ const ExistingBill = () => {
             height: "22px",
           }}
         >
-          {bill?.data?.data?.totalRecords}
+          {ExistingBills?.totalRecords}
         </Typography>
       </Box>
       {isLoading ? (
