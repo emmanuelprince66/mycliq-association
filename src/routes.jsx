@@ -20,7 +20,7 @@ import CreateAssociationBill from "./pages/CreateAssociationBill";
 
 const myRoutes = [
   { component: <Login />, path: "/", name: "Login Page" },
-  { component: <Overview />, path: "/overview", name: "Overview Page" },
+  // { component: <Overview />, path: "/overview", name: "Overview Page" },
   { component: <Students />, path: "/students", name: "Students" },
   { component: <ManageBills />, path: "/manage-bills", name: "Manage Bills" },
   { component: <Transaction />, path: "/transaction", name: "transaction" },

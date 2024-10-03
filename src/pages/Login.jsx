@@ -75,7 +75,7 @@ export const Login = () => {
       }
     },
     onSuccess: (data) => {
-      navigate("/overview");
+      navigate("/students");
       Cookies.set("authToken", data?.data?.access_token);
       Cookies.set("refreshToken", data?.data?.refreshToken);
       // Handle success, update state, or perform further actions

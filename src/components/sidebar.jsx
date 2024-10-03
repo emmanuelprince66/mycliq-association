@@ -76,20 +76,7 @@ export const Sidebar = () => {
     <aside className="flex h-full pl-[2em] py-[3em]  border-r border-border_light pr-[1em] flex-col bg-white">
       <img src={cliqIcon} className="w-[100px] mt-[-40px] " alt="check icon" />
 
-      <div className="pt-5 pb-3  border-b border-solid ">
-        <div
-          className={`${
-            location === "/overview"
-              ? "bg-brown_1 text-white"
-              : "bg-transparent text-grey_2"
-          } p-2 w-full  rounded-[10px]`}
-        >
-          <Link to="/overview" className="flex flex-row items-center gap-2 ">
-            <OverviewIcon isOverview={location === "/overview"} />
-            Overview
-          </Link>
-        </div>
-      </div>
+      <div className="pt-5 pb-3  border-b border-solid "></div>
 
       <div className="pt-5 pb-3 flex flex-col gap-4  text-grey_2 border-b border-solid ">
         <span className=" font-normal">MAIN MENU</span>

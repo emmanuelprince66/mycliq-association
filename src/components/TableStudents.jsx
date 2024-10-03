@@ -1,5 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import ReportOutlinedIcon from "@mui/icons-material/ReportOutlined";
+import HourglassBottomOutlinedIcon from "@mui/icons-material/HourglassBottomOutlined";
+
 import {
   Table,
   Box,
@@ -23,7 +26,7 @@ import Divider from "@mui/material/Divider";
 import search from "../../src/assets/search.svg";
 import InputAdornment from "@mui/material/InputAdornment";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
-
+import { useQuery } from "@tanstack/react-query";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import selectIcon from "../assets/selectIcon.svg";
@@ -69,6 +72,7 @@ const TableStudents = () => {
     setOpenFilterModal(false);
     setShowStalites(false);
   };
+  const dispatch = useDispatch();
 
   const handleClose1 = () => setOpen1(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -77,6 +81,7 @@ const TableStudents = () => {
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
   const [details, setDetails] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -103,89 +108,32 @@ const TableStudents = () => {
     setPage(0);
   };
 
-  const dispatch = useDispatch();
+  const fetchTrxData = async ({ queryKey }) => {
+    const [_key, { page, limit }] = queryKey;
+    try {
+      const response = await AuthAxios.get(
+        `/merchant/trx?page=${page}&limit=${limit}&type=user`
+      );
+      return response?.data?.data;
+    } catch (error) {
+      throw new Error("Failed to fetch customer data");
+    }
+  };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await AuthAxios({
-          url: "/transaction/merchant?limit=200",
-          method: "GET",
-        });
+  const {
+    data: trxData,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["trxData", { page: currentPage, limit: rowsPerPage }],
+    queryFn: fetchTrxData,
+    keepPreviousData: true,
+    staleTime: 5000, // Cache data for 5 seconds
+  });
 
-        if (response) {
-          console.log(response);
-          setLoading(false);
+  useEffect(() => {}, [trxData]);
 
-          const paidData = response?.data?.queryResult.filter(
-            (item) => item?.remittance?.paymentStatus === "PAID"
-          );
-          setPaidDataState(paidData.length);
-
-          const verifiedData = response?.data?.queryResult.filter(
-            (item) => item?.remittance?.paymentStatus === "VERIFIED"
-          );
-          setVerifiedDataState(verifiedData.length);
-
-          let filteredItems = response.data?.queryResult;
-
-          // Filter by name (if searchTerm exists)
-          if (searchTerm) {
-            const term = searchTerm.toLowerCase();
-            filteredItems = filteredItems.filter((item) => {
-              const studentName = item?.remittance?.studentName?.toLowerCase();
-              const matricNumber = item?.remittance?.matricNumber?.toString();
-
-              return (
-                (studentName && studentName.includes(term)) ||
-                (matricNumber && matricNumber.includes(term))
-              );
-            });
-          }
-
-          // Apply specific filters (transactions, paid, verified)
-          if (showPaid === "paid") {
-            console.log("paid");
-            filteredItems = filteredItems.filter(
-              (item) => item?.remittance?.paymentStatus === "PAID"
-            );
-          } else if (showPaid === "verified") {
-            console.log("verif");
-
-            filteredItems = filteredItems.filter(
-              (item) => item?.remittance?.paymentStatus === "VERIFIED"
-            );
-          }
-
-          // Filter by date range (if selectedDates exist)
-          if (selectedDates) {
-            const startDate = new Date(selectedDates.startDate);
-            const endDate = new Date(selectedDates.endDate);
-            endDate.setDate(endDate.getDate() + 1); // Increment by 1 day to include the end date
-
-            filteredItems = filteredItems.filter((item) => {
-              const createdAt = new Date(item?.createdAt);
-
-              return (
-                createdAt >= startDate && createdAt < endDate // Inclusive of start and end dates
-              );
-            });
-          }
-
-          setTransactionData(filteredItems);
-          dispatch(saveTransactionData(response?.data));
-        }
-      } catch (error) {
-        console.log(error);
-        if (error.response && error.response.status === 401) {
-          navigate("/");
-          localStorage.clear();
-        }
-      }
-    };
-
-    fetchData();
-  }, [dispatch, searchTerm, selectedDates, showPaid]);
+  console.log("trx", trxData);
 
   async function viewDetails(i) {
     setOpen1(true);
@@ -194,7 +142,7 @@ const TableStudents = () => {
   return (
     <Box
       sx={{
-        width: "1080px",
+        width: "100%",
         margin: "auto",
         padding: "1rem",
         backgroundColor: "#fffcfc",
@@ -210,7 +158,7 @@ const TableStudents = () => {
 
       <Box
         sx={{
-          width: "1080px",
+          width: "100%",
           margin: "auto",
           padding: "1rem",
           backgroundColor: "#fff",
@@ -254,10 +202,10 @@ const TableStudents = () => {
                 background: "#FFEFD6",
               }}
             >
-              {paidDataState === null ? (
+              {!trxData || isLoading ? (
                 <CircularProgress size="1.2rem" sx={{ color: "white" }} />
               ) : (
-                `${paidDataState} Paid , ${verifiedDataState} Verified `
+                trxData?.totalRecords
               )}
             </Typography>
           </Box>
@@ -521,7 +469,7 @@ const TableStudents = () => {
                     </TableCell>
                   </TableRow>
                 ))} */}
-              {loading ? (
+              {isLoading ? (
                 <TableRow>
                   <CircularProgress
                     size="4.2rem"
@@ -532,44 +480,71 @@ const TableStudents = () => {
                     }}
                   />
                 </TableRow>
-              ) : transactionData.length > 0 ? (
-                transactionData.map((item, i) => (
+              ) : trxData?.records.length > 0 ? (
+                trxData?.records.map((item, i) => (
                   <TableRow key={item.id}>
-                    <TableCell>{i + 1}</TableCell>
-                    <TableCell>{` ID:${item.id.slice(1, 12)}`}</TableCell>
-                    <TableCell>{item?.remittance?.studentName}</TableCell>
-                    <TableCell>{item?.remittance?.bill?.billName}</TableCell>
-                    <TableCell>{item.amount}</TableCell>
                     <TableCell>
-                      {" "}
+                      {i + 1 + (currentPage - 1) * rowsPerPage}
+                    </TableCell>
+                    <TableCell>{item?.id}</TableCell>
+                    <TableCell>{item?.origin?.accountName}</TableCell>
+                    <TableCell>
+                      {item?.recipientDetails?.association?.billType}
+                    </TableCell>
+                    <TableCell>{item?.amount} </TableCell>
+                    <TableCell>
                       <Box
                         sx={{
                           textTransform: "capitalize",
                           background:
-                            item?.remittance?.paymentStatus === "VERIFIED"
-                              ? "#EBF3FF"
-                              : "#EBFFF3",
+                            item?.status === "failed"
+                              ? "#FFF0F0"
+                              : item.status === "success"
+                              ? "#EBFFF3"
+                              : item?.status === "pending" ||
+                                item?.status === "incoming"
+                              ? "#FFF0F0"
+                              : "",
                           color:
-                            item?.remittance?.paymentStatus !== "VERIFIED"
+                            item?.status === "failed"
+                              ? "#E52929"
+                              : item.status === "success"
                               ? "#1E854A"
-                              : "#1367D8",
-                          width:
-                            item.additionalDetails === "PAID" ? "67px" : "87px",
+                              : item?.status === "pending" ||
+                                item?.status === "incoming"
+                              ? "#CDA11E"
+                              : "",
                           fontWeight: "500",
                           fontSize: "12px",
-                          padding: "4px 8px 4px 8px",
+                          padding: "4px 8px",
                           borderRadius: "8px",
                           display: "flex",
-                          minWidth: "fit-content",
+                          justifyContent: "center",
                           alignItems: "center",
                           gap: "5px",
                           border: "1px solid #E0E0E0",
                         }}
                       >
-                        <CheckCircleOutlineRoundedIcon
-                          sx={{ fontSize: "12px" }}
-                        />{" "}
-                        {item?.remittance?.paymentStatus}
+                        {item?.status === "failed" && (
+                          <ReportOutlinedIcon sx={{ fontSize: "12px" }} />
+                        )}
+                        {item?.status === "success" && (
+                          <CheckCircleOutlineRoundedIcon
+                            sx={{ fontSize: "12px" }}
+                          />
+                        )}
+                        {item?.status === "incoming" && (
+                          <HourglassBottomOutlinedIcon
+                            sx={{ fontSize: "12px" }}
+                          />
+                        )}
+                        {item?.status === "pending" && (
+                          <HourglassBottomOutlinedIcon
+                            sx={{ fontSize: "12px" }}
+                          />
+                        )}
+
+                        {item?.status}
                       </Box>
                     </TableCell>
                     <TableCell>
@@ -606,7 +581,7 @@ const TableStudents = () => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={transactionData.length}
+          count={trxData?.records?.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
