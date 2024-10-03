@@ -16,9 +16,12 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import closeIcon from "../assets/images/closeIcon.svg";
 import successIcon from "../assets/successIcon.svg";
 import DatePicker from "react-datepicker";
+import { toast } from "react-toastify";
+
 import "react-datepicker/dist/react-datepicker.css";
 import { AuthAxios } from "../helpers/axiosInstance";
 import { useForm } from "react-hook-form";
+import { ToastContainer } from "react-toastify";
 const style = {
   position: "absolute",
   top: "50%",
@@ -53,6 +56,19 @@ const CreateBill = () => {
     setPickedDate(new Date());
     setFormContent({});
   }
+
+  const notifyError = (msg) => {
+    toast.error(msg, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 6000, // Time in milliseconds
+    });
+  };
+  const notifySuccess = (msg) => {
+    toast.success(msg, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 6000, // Time in milliseconds
+    });
+  };
   const createBill = async () => {
     setLoading(true);
     try {
@@ -72,21 +88,18 @@ const CreateBill = () => {
           },
         ],
       };
-      console.log("payload", payload);
       const response = await AuthAxios.post(
         "merchant/bill/association",
         payload
       );
       console.log(response);
-      // if (response.status === 201) {
-      //   setOpen1(true);
-      //   setOpen2(false);
-      //   reset();
-      //   setLoading(false);
-      //   setPickedDate(new Date());
-      // }
+      setLoading(false);
+      setOpen1(true);
+      setOpen2(false);
+      reset();
     } catch (error) {
       console.log(error);
+      notifyError(error?.response?.data?.message);
       setLoading(false);
     }
   };
@@ -926,6 +939,8 @@ const CreateBill = () => {
         </Box>
       </Modal>
       {/* Modal ends */}
+
+      <ToastContainer />
     </Box>
   );
 };
