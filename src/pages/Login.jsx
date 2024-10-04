@@ -75,9 +75,15 @@ export const Login = () => {
       }
     },
     onSuccess: (data) => {
+      console.log("data", data);
       navigate("/students");
       Cookies.set("authToken", data?.data?.access_token);
       Cookies.set("refreshToken", data?.data?.refreshToken);
+
+      localStorage.setItem(
+        "merchant",
+        JSON.stringify(data?.data?.user?.merchant)
+      );
       // Handle success, update state, or perform further actions
     },
     onError: (error) => {

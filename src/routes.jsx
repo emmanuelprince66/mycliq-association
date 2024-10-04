@@ -17,6 +17,7 @@ import ResetPassword from "./pages/ResetPassword";
 import ForgetPassword from "./pages/ForgetPassword";
 import { AuthProvider } from "./utils/AuthContext";
 import CreateAssociationBill from "./pages/CreateAssociationBill";
+import Attendants from "./pages/Attendants";
 
 const myRoutes = [
   { component: <Login />, path: "/", name: "Login Page" },
@@ -33,6 +34,7 @@ const myRoutes = [
     path: "/create-association",
     name: "Cassociation",
   },
+  { component: <Attendants />, path: "/attendants", name: "Attendants" },
 ];
 
 const theme = createTheme({

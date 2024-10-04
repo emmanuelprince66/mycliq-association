@@ -18,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { ToastContainer, toast } from "react-toastify";
+import { useMutation } from "@tanstack/react-query";
 const style = {
   position: "absolute",
   top: "50%",
@@ -30,6 +31,7 @@ const style = {
 };
 const WithdrawFunds = () => {
   const [open1, setOpen1] = React.useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   const [withdrawDetails, setWithdrawDetails] = useState({});
   const handleClose1 = () => setOpen1(false);
   const [open2, setOpen2] = React.useState(false);
@@ -51,54 +53,59 @@ const WithdrawFunds = () => {
     handleSubmit,
     formState: { errors, isSubmitting, isValid },
   } = useForm();
+
   function handleCheckWithdrawal(data) {
-    const isNarrationValid = (value) => {
-      // Check if narration has at least 2 words
-      const words = value.trim().split(/\s+/);
-      return words.length >= 2;
-    };
+    const parseFloatPrice = parseInt(data?.withdrawalAmount);
 
-    const canWithdraw =
-      /^\d+$/.test(data.withdrawalAmount) &&
-      parseFloat(data.withdrawalAmount) <= transactionDetails.walletBalance &&
-      isNarrationValid(data.narration);
-    if (!/^\d+$/.test(Number(data.withdrawalAmount))) {
-      setErrorAmount(
-        "Please enter a valid amount with only numbers and no mixed characters"
-      );
+    if (parseFloatPrice < 100) {
+      setErrorAmount("Amount must not be less than 100 ");
+    } else if (data?.narration === "") {
+      setErrorNarration("Narration is required");
+    } else {
+      const payload = {
+        amount: parseFloatPrice,
+        narration: data?.narration,
+      };
+      setWithdrawDetails(payload);
+      setOpen2(true);
+      // setButtonDisabled(true);
+      // initiateBankWithdrawalMutation.mutate(payload);
     }
-    if (parseFloat(data.withdrawalAmount) > transactionDetails.walletBalance) {
-      setErrorAmount("Amount cannot be greater than wallet balance");
-      console.log("Amount cannot be greater than wallet balance");
-    }
-    if (!isNarrationValid(data.narration)) {
-      setErrorNarration("Narration should be more than a word!");
-    }
-    if (canWithdraw) {
-      setOpen1(true);
-      setErrorAmount("");
-      setErrorNarration("");
-    }
-    console.log(data);
-    setWithdrawDetails(data);
   }
 
-  useEffect(() => {
-    async function getBankDetails() {
-      const response = await AuthAxios.get("/transaction/bank-details");
-      console.log(response);
-      dispatch(fillBankDetails(response.data));
-    }
-    getBankDetails();
-  }, []);
+  console.log("pay", withdrawDetails);
+  const handleAmountChange = () => {
+    setErrorAmount("");
+  };
+  const handleNarrationChange = () => {
+    setErrorNarration("");
+  };
+  const initiateBankWithdrawalMutation = useMutation({
+    mutationFn: async (formData) => {
+      try {
+        const response = await AuthAxios({
+          url: "/bank/trf/withdrawal/bank/initiate",
+          method: "POST",
+          data: formData,
+        });
 
-  function handleProceedToWithdraw() {
-    // const response = await AuthAxios.post(
-    // 'transaction/withdrawal',
-    // )
-    setOpen1(false);
-    setOpen2(true);
-  }
+        return response.data;
+      } catch (error) {
+        console.log(error);
+        throw new Error(error.response.data.message);
+      }
+    },
+    onSuccess: (data) => {
+      console.log("data", data);
+      setButtonDisabled(false);
+      // Handle success, update state, or perform further actions
+    },
+    onError: (error) => {
+      console.log(error);
+      setButtonDisabled(false);
+    },
+  });
+
   const notifyError = (msg) => {
     toast.error(msg, {
       position: toast.POSITION.TOP_RIGHT,
@@ -143,6 +150,12 @@ const WithdrawFunds = () => {
     }
   }
 
+  const handleWithdrawalInitiate = () => {
+    console.log("hello");
+    setButtonDisabled(true);
+    initiateBankWithdrawalMutation.mutate(withdrawDetails);
+  };
+
   const isWithdrawalAmountValid = (value) => {
     // Check if withdrawal amount is a valid number and not more than wallet balance
     const numericValue = parseFloat(value);
@@ -150,6 +163,7 @@ const WithdrawFunds = () => {
       !isNaN(numericValue) && numericValue <= transactionDetails.walleBalance
     );
   };
+  const handleProceedToWithdraw = () => {};
 
   return (
     <Box
@@ -254,6 +268,7 @@ const WithdrawFunds = () => {
               {...register("withdrawalAmount", {
                 required: "Amount is required",
               })}
+              onChange={handleAmountChange}
               sx={{
                 width: "100%",
                 "& .MuiOutlinedInput-root": {
@@ -330,6 +345,7 @@ const WithdrawFunds = () => {
                 inputProps={{
                   "aria-label": "weight",
                 }}
+                onChange={handleNarrationChange}
               />
             </Box>
             <Box
@@ -695,8 +711,8 @@ const WithdrawFunds = () => {
               }}
             >
               Are you sure you want to withdraw “₦
-              {withdrawDetails.withdrawalAmount}”? Withdrawals cannot be
-              recalled once placed.
+              {withdrawDetails.amount}”? Withdrawals cannot be recalled once
+              placed.
             </Typography>
 
             <Box
@@ -726,11 +742,13 @@ const WithdrawFunds = () => {
                 }}
                 variant="outlined"
               >
-                Cancel
+                e Cancel
               </Button>
               <Button
-                onClick={handleWithdraw}
-                disabled={loading}
+                onClick={handleWithdrawalInitiate}
+                disabled={
+                  initiateBankWithdrawalMutation.isLoading || buttonDisabled
+                }
                 sx={{
                   background: "#dc0019",
                   width: "100%",
@@ -743,7 +761,7 @@ const WithdrawFunds = () => {
                   },
                 }}
               >
-                {loading ? (
+                {initiateBankWithdrawalMutation.isLoading || buttonDisabled ? (
                   <CircularProgress size="1.2rem" sx={{ color: "white" }} />
                 ) : (
                   "Yes,Withdraw"

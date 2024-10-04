@@ -8,7 +8,7 @@ import TransactionIcon from "../assets/images/sidebar/transactionIcon";
 import SuperAdmin from "../assets/images/sidebar/super";
 import SupportIcon from "../assets/images/sidebar/support";
 import cliqIcon from "../assets/images/admin/cliqIcon.png";
-
+import AccountBoxRoundedIcon from "@mui/icons-material/AccountBoxRounded";
 import Mode from "../assets/images/sidebar/mode";
 import SunIcon from "../assets/images/ColorMode/sun.svg";
 import checkIcon from "../assets/images/logo.png";
@@ -44,6 +44,11 @@ export const Sidebar = () => {
       name: "Administrator",
       component: <SuperAdmin isRightLink={location === "/super-admin"} />,
       link: "super-admin",
+    },
+    {
+      name: "Attendants",
+      component: <AccountBoxRoundedIcon />,
+      link: "attendants",
     },
     {
       name: "Support",
