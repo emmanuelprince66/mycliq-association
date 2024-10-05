@@ -63,6 +63,8 @@ const TableStudents = () => {
   const [paidDataState, setPaidDataState] = useState(null);
   const [verifiedDataState, setVerifiedDataState] = useState(null);
 
+  const [status, setStatus] = useState(null);
+
   const { transactionDetails } = useSelector((state) => state);
   const { selectedDates } = useSelector((state) => state);
 
@@ -82,6 +84,7 @@ const TableStudents = () => {
   const [index, setIndex] = useState(0);
   const [details, setDetails] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  const [studentByI, setStudentByI] = useState(null);
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -109,10 +112,19 @@ const TableStudents = () => {
   };
 
   const fetchTrxData = async ({ queryKey }) => {
-    const [_key, { page, limit }] = queryKey;
+    const [_key, { page, limit, status }] = queryKey;
+
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("limit", limit);
+
+    if (status) {
+      params.append("status", status);
+    }
+
     try {
       const response = await AuthAxios.get(
-        `/merchant/trx?page=${page}&limit=${limit}&type=payment`
+        `/merchant/bill/association/tickets?${params.toString()}`
       );
       return response?.data?.data;
     } catch (error) {
@@ -125,7 +137,10 @@ const TableStudents = () => {
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["trxData", { page: currentPage, limit: rowsPerPage }],
+    queryKey: [
+      "trxData",
+      { page: currentPage, limit: rowsPerPage, status: showPaid },
+    ],
     queryFn: fetchTrxData,
     keepPreviousData: true,
     staleTime: 5000, // Cache data for 5 seconds
@@ -135,10 +150,11 @@ const TableStudents = () => {
 
   console.log("trx", trxData);
 
-  async function viewDetails(i) {
+  const viewDetails = (id) => {
+    const studentById = trxData?.records?.find((item) => item?.id === id);
+    setStudentByI(studentById);
     setOpen1(true);
-    setIndex(i);
-  }
+  };
   return (
     <Box
       sx={{
@@ -307,7 +323,7 @@ const TableStudents = () => {
         >
           <Button
             variant={showPaid === "transaction" ? "contained" : "outlined"}
-            onClick={() => handleSortByStatus("transaction")}
+            onClick={() => handleSortByStatus(null)}
             style={{
               marginRight: "5px",
               backgroundColor:
@@ -549,7 +565,7 @@ const TableStudents = () => {
                     </TableCell>
                     <TableCell>
                       <Button
-                        onClick={() => viewDetails(i)}
+                        onClick={() => viewDetails(item?.id)}
                         variant="outlined"
                         sx={{
                           textTransform: "capitalize",
@@ -604,7 +620,7 @@ const TableStudents = () => {
         >
           <TransactionDetailsStudents
             handleClose1={handleClose1}
-            details={transactionData[index]}
+            details={studentByI}
           />
         </Modal>
         {/* Modal ends */}
@@ -643,7 +659,7 @@ const TableStudents = () => {
             >
               <Typography
                 sx={{
-                  fomtWeight: "900",
+                  fontWeight: "900",
                   color: "#1E1E1E",
                   fontWeight: "500",
                   fontSize: "20px",

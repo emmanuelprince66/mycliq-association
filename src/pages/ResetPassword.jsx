@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import { Button } from "@mui/material";
 import { getCookie } from "../utils/cookieAuth";
-import { BaseAxios } from "../helpers/axiosInstance";
+import { AuthAxios, BaseAxios } from "../helpers/axiosInstance";
 import { queryClient } from "../helpers/queryClient";
 import passwordLogo from "../assets/passwordLogo.svg";
 import { useNavigate } from "react-router-dom";
@@ -127,21 +127,13 @@ const ResetPassword = () => {
 
   // reset password
   const mutationReset = useMutation({
-    mutationFn: async (token) => {
+    mutationFn: async (payload) => {
       try {
-        const response = await axios.post(
-          "https://mycliq-prod-e2c876691052.herokuapp.com/api/v1/auth/password-change",
-          {
-            currentPassword: currentPasswordInput,
-            newPassword: newPasswordInput,
-            confirmPassword: confirmPasswordInput,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await AuthAxios({
+          url: "/account/change-password",
+          method: "POST",
+          data: payload,
+        });
 
         return response.data;
       } catch (error) {
@@ -244,9 +236,12 @@ const ResetPassword = () => {
       return;
     }
     if (newPasswordInput === confirmPasswordInput) {
-      const token = localStorage.getItem("authToken");
+      const payload = {
+        currentPassword: currentPasswordInput,
+        newPassword: newPasswordInput,
+      };
 
-      mutationReset.mutate(token);
+      mutationReset.mutate(payload);
     } else {
       notifyErr("Password do not match");
       setDisableButton(false);
