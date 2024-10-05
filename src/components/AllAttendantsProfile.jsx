@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, Button, Modal, Grid } from "@mui/material";
 import AccountBoxRoundedIcon from "@mui/icons-material/AccountBoxRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
@@ -7,14 +7,64 @@ import TransgenderRoundedIcon from "@mui/icons-material/TransgenderRounded";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import HttpsOutlinedIcon from "@mui/icons-material/HttpsOutlined";
+import { useQuery } from "@tanstack/react-query";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { CalendarMonthOutlined } from "@mui/icons-material";
+import { useMutation } from "@tanstack/react-query";
 import KeyboardBackspaceRoundedIcon from "@mui/icons-material/KeyboardBackspaceRounded";
 // import bigAvatar from "../assets/bigAvatar.svg";
 // import switchLogo from "../assets/switchLogo.svg";
 import { Switch } from "@mui/material";
+import { AuthAxios } from "../helpers/axiosInstance";
 const AllAttendantsProfile = ({ setShowProfile, profileData }) => {
-  console.log(profileData);
+  const [delId, setDelId] = useState("");
+  function modDate(value) {
+    const date = new Date(value);
+    const day = date.getDay();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const hrs = date.getHours();
+    const mins = date.getMinutes();
+    const period = hrs >= 12 ? "pm" : "am";
+    const formattedHours = hrs % 12 || 12;
+
+    return `${day} - ${month} - ${year} at ${formattedHours}:${mins} ${period}`;
+  }
+
+  const handleSwitchChange = (event, id) => {
+    const isChecked = event.target.checked;
+
+    if (isChecked) {
+      disableAttendantMutation.mutate({ id });
+    }
+  };
+
+  const disableAttendantMutation = useMutation({
+    mutationFn: async (payload) => {
+      try {
+        // Convert the id to a string
+        const response = await AuthAxios({
+          url: `/merchant/attendant/${String(payload?.id)}`,
+          method: "delete",
+        });
+
+        return response.data;
+      } catch (error) {
+        console.log(error);
+        throw new Error(error.response.data.message);
+      }
+    },
+    onSuccess: (data) => {
+      console.log("data", data);
+      notifySuccess(data?.message);
+    },
+    onError: (error) => {
+      console.log(error);
+      notifyError("Something went wrong, try again.");
+      setButtonDisabled(false);
+    },
+  });
+
   return (
     <Box
       sx={{
@@ -78,7 +128,7 @@ const AllAttendantsProfile = ({ setShowProfile, profileData }) => {
                   color: "#dc0019",
                 }}
               >
-                {profileData?.nm}
+                {profileData?.lastName}
               </Typography>
             </Box>
           </Box>
@@ -147,7 +197,7 @@ const AllAttendantsProfile = ({ setShowProfile, profileData }) => {
               }}
             >
               <Typography sx={{ color: "#000", fontSize: "14px", my: "5px" }}>
-                Julia
+                {profileData?.lastName}
               </Typography>
             </Box>
           </Box>
@@ -175,7 +225,7 @@ const AllAttendantsProfile = ({ setShowProfile, profileData }) => {
 
             <Box>
               <Typography sx={{ color: "#000", fontSize: "14px", my: "5px" }}>
-                Juilarte
+                {profileData?.firstName}
               </Typography>
             </Box>
           </Box>
@@ -203,7 +253,7 @@ const AllAttendantsProfile = ({ setShowProfile, profileData }) => {
 
             <Box>
               <Typography sx={{ color: "#000", fontSize: "14px", my: "5px" }}>
-                Male
+                {profileData?.gender}
               </Typography>
             </Box>
           </Box>
@@ -231,7 +281,7 @@ const AllAttendantsProfile = ({ setShowProfile, profileData }) => {
 
             <Box>
               <Typography sx={{ color: "#000", fontSize: "14px", my: "5px" }}>
-                emmanuelochigbo60@gmail.com
+                {profileData?.email}
               </Typography>
             </Box>
           </Box>
@@ -259,7 +309,7 @@ const AllAttendantsProfile = ({ setShowProfile, profileData }) => {
 
             <Box>
               <Typography sx={{ color: "#000", fontSize: "14px", my: "5px" }}>
-                081355667744
+                {profileData?.phoneNumber}
               </Typography>
             </Box>
           </Box>
@@ -287,7 +337,7 @@ const AllAttendantsProfile = ({ setShowProfile, profileData }) => {
 
             <Box>
               <Typography sx={{ color: "#000", fontSize: "14px", my: "5px" }}>
-                081355667744
+                {profileData?.altPhoneNumber}
               </Typography>
             </Box>
           </Box>
@@ -316,7 +366,7 @@ const AllAttendantsProfile = ({ setShowProfile, profileData }) => {
 
             <Box>
               <Typography sx={{ color: "#000", fontSize: "14px", my: "5px" }}>
-                01/05/2024
+                {modDate(profileData?.createdAt)}
               </Typography>
             </Box>
           </Box>
@@ -348,8 +398,8 @@ const AllAttendantsProfile = ({ setShowProfile, profileData }) => {
               }}
             >
               <Switch
-                // checked={item.isDisabled}
-                // (e)=>  checkBill(e,i)}
+                checked={false} // Bind to item state (adjust according to your data)
+                onChange={(event) => handleSwitchChange(event, profileData?.id)}
                 sx={{
                   "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
                     backgroundColor: "#DC0019",

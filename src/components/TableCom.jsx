@@ -52,14 +52,29 @@ import { AuthAxios } from "../helpers/axiosInstance";
 import { TransactionDetails } from "./transactionDetails";
 import { ArrowBackIosNewRounded } from "@mui/icons-material";
 import FormattedPrice from "./FormattedPrice";
+import { formatToIsoDateStr } from "../utils/formatIsoDateString";
+import { adjustDateRange } from "../utils/dateFix";
 
 const TableCom = () => {
   const [transactionData, setTransactionData] = useState([]);
+  const [trxId, setTrxId] = useState("");
+
   console.log(transactionData);
   const [open1, setOpen1] = React.useState(false);
   const [data, setData] = useState({});
   const handleClose1 = () => setOpen1(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const { selectedDates } = useSelector((state) => state);
+
+  const startDate = formatToIsoDateStr(selectedDates?.startDate);
+  const endDate = formatToIsoDateStr(selectedDates?.endDate);
+
+  const { startDate: newStartDate, endDate: newEndDate } = adjustDateRange(
+    startDate,
+    endDate
+  );
+
+  console.log(startDate, endDate);
 
   const [totalDeposits, setTotalDeposits] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -67,8 +82,7 @@ const TableCom = () => {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
-  const [details, setDetails] = useState({});
-  const { selectedDates } = useSelector((state) => state);
+  const [details, setDetails] = useState(null);
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -101,11 +115,39 @@ const TableCom = () => {
     setPage(0);
   };
 
+  const fetchTrxAnalyticsData = async ({ queryKey }) => {
+    const [_key, { startDate, endDate }] = queryKey;
+    try {
+      const response = await AuthAxios.post(
+        `/merchant/analytics?startDate=${startDate}&endDate=${endDate}`
+      );
+      return response?.data?.data;
+    } catch (error) {
+      throw new Error("Failed to fetch customer data");
+    }
+  };
+
+  const {
+    data: trxAnalyData,
+    error: analyErr,
+    isLoading: analyLoading,
+  } = useQuery({
+    queryKey: [
+      "trxAnalyData",
+      { startDate: newStartDate, endDate: newEndDate },
+    ],
+    queryFn: fetchTrxAnalyticsData,
+    keepPreviousData: true,
+    staleTime: 5000, // Cache data for 5 seconds
+  });
+
+  console.log("trxanalty", trxAnalyData);
+
   const fetchTrxData = async ({ queryKey }) => {
     const [_key, { page, limit }] = queryKey;
     try {
       const response = await AuthAxios.get(
-        `/merchant/trx?page=${page}&limit=${limit}&type=user`
+        `/merchant/trx?page=${page}&limit=${limit}&type=payment`
       );
       return response?.data?.data;
     } catch (error) {
@@ -124,12 +166,14 @@ const TableCom = () => {
     staleTime: 5000, // Cache data for 5 seconds
   });
 
-  console.log("trx", trxData);
+  const viewDetails = (id) => {
+    const trxByIdF = trxData?.records?.find((item) => item?.id === id);
 
-  async function viewDetails(i) {
-    setOpen1(true);
-    setIndex(i);
-  }
+    if (trxByIdF) {
+      setDetails(trxByIdF);
+      setOpen1(true);
+    }
+  };
   return (
     <Box
       sx={{
@@ -191,21 +235,60 @@ const TableCom = () => {
             </Typography>
           </Box>
 
-          <Box>
-            <Typography
-              sx={{
-                fomtWeight: "600",
-                fontSize: "24px",
-                color: "#1E1E1E",
-              }}
-            >
-              {/* {totalDeposits === null ? (
-                <CircularProgress size="1.2rem" sx={{ color: "#ff7f00" }} />
-              ) : (
-                <FormattedPrice amount={totalDeposits} />
-              )} */}
-            </Typography>
-          </Box>
+          <div className="flex items-start flex-col gap-2">
+            <Box className="flex gap-4 items-center ">
+              <Typography
+                sx={{
+                  fontWeight: "300",
+                  fontSize: "14px",
+                  color: "#1E1E1E",
+                }}
+              >
+                All - Time
+              </Typography>
+              <Typography
+                sx={{
+                  fomtWeight: "600",
+                  fontSize: "24px",
+                  color: "#1E1E1E",
+                }}
+              >
+                {analyLoading ? (
+                  <CircularProgress size="1.2rem" sx={{ color: "#ff7f00" }} />
+                ) : (
+                  <FormattedPrice
+                    amount={trxAnalyData?.transaction?.totalInwardsSum}
+                  />
+                )}
+              </Typography>
+            </Box>
+            <Box className="flex gap-4 items-center ">
+              <Typography
+                sx={{
+                  fontWeight: "300",
+                  fontSize: "14px",
+                  color: "#1E1E1E",
+                }}
+              >
+                By - Filter
+              </Typography>
+              <Typography
+                sx={{
+                  fomtWeight: "600",
+                  fontSize: "24px",
+                  color: "#1E1E1E",
+                }}
+              >
+                {analyLoading ? (
+                  <CircularProgress size="1.2rem" sx={{ color: "#ff7f00" }} />
+                ) : (
+                  <FormattedPrice
+                    amount={trxAnalyData?.transaction?.filterInwardsSum}
+                  />
+                )}
+              </Typography>
+            </Box>
+          </div>
         </Card>
         <Card
           sx={{
@@ -267,17 +350,60 @@ const TableCom = () => {
             </Box>
           </Box>
 
-          <Box>
-            <Typography
-              sx={{
-                fomtWeight: "600",
-                fontSize: "24px",
-                color: "##1E1E1E",
-              }}
-            >
-              {/* <FormattedPrice amount={transactionDetails.outflow} /> */}
-            </Typography>
-          </Box>
+          <div className="flex items-start flex-col gap-2">
+            <Box className="flex gap-4 items-center ">
+              <Typography
+                sx={{
+                  fontWeight: "300",
+                  fontSize: "14px",
+                  color: "#1E1E1E",
+                }}
+              >
+                All - Time
+              </Typography>
+              <Typography
+                sx={{
+                  fomtWeight: "600",
+                  fontSize: "24px",
+                  color: "#1E1E1E",
+                }}
+              >
+                {analyLoading ? (
+                  <CircularProgress size="1.2rem" sx={{ color: "#ff7f00" }} />
+                ) : (
+                  <FormattedPrice
+                    amount={trxAnalyData?.transaction?.totalOutwardsSum}
+                  />
+                )}
+              </Typography>
+            </Box>
+            <Box className="flex gap-4 items-center ">
+              <Typography
+                sx={{
+                  fontWeight: "300",
+                  fontSize: "14px",
+                  color: "#1E1E1E",
+                }}
+              >
+                By - Filter
+              </Typography>
+              <Typography
+                sx={{
+                  fomtWeight: "600",
+                  fontSize: "24px",
+                  color: "#1E1E1E",
+                }}
+              >
+                {analyLoading ? (
+                  <CircularProgress size="1.2rem" sx={{ color: "#ff7f00" }} />
+                ) : (
+                  <FormattedPrice
+                    amount={trxAnalyData?.transaction?.filterOutwardsSum}
+                  />
+                )}
+              </Typography>
+            </Box>
+          </div>
         </Card>
         <Card
           sx={{
@@ -324,9 +450,13 @@ const TableCom = () => {
                 color: "##1E1E1E",
               }}
             >
-              {/* <FormattedPrice
-                amount={Number(transactionDetails?.walletBalance || 0)}
-              /> */}
+              {analyLoading ? (
+                <CircularProgress size="1.2rem" sx={{ color: "#ff7f00" }} />
+              ) : (
+                <FormattedPrice
+                  amount={trxAnalyData?.bankDetails?.currentBalance}
+                />
+              )}
             </Typography>
           </Box>
         </Card>
@@ -497,7 +627,7 @@ const TableCom = () => {
                     </TableCell>
                     <TableCell>
                       <Button
-                        onClick={() => viewDetails(i)}
+                        onClick={() => viewDetails(item?.id)}
                         variant="outlined"
                         sx={{
                           textTransform: "capitalize",
@@ -550,10 +680,7 @@ const TableCom = () => {
             },
           }}
         >
-          <TransactionDetails
-            handleClose1={handleClose1}
-            details={trxData?.records[index]}
-          />
+          <TransactionDetails handleClose1={handleClose1} details={details} />
         </Modal>
         {/* Modal ends */}
       </Box>

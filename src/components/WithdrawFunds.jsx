@@ -10,6 +10,7 @@ import closeIcon from "../assets/images/closeIcon.svg";
 import exLogo from "../assets/exLogo.svg";
 import { useForm } from "react-hook-form";
 import { AuthAxios } from "../helpers/axiosInstance";
+
 import successIcon from "../assets/successIcon.svg";
 import { useSelector } from "react-redux";
 import PaymentsRoundedIcon from "@mui/icons-material/PaymentsRounded";
@@ -73,6 +74,16 @@ const WithdrawFunds = () => {
     }
   }
 
+  function generateRandomCode() {
+    // Generate a random 4-digit code and convert it to a string
+    const randomCode = Math.floor(1000 + Math.random() * 9000).toString();
+    return randomCode;
+  }
+
+  // Example usage:
+
+  // Example usage:
+
   console.log("pay", withdrawDetails);
   const handleAmountChange = () => {
     setErrorAmount("");
@@ -80,6 +91,36 @@ const WithdrawFunds = () => {
   const handleNarrationChange = () => {
     setErrorNarration("");
   };
+
+  const completeBankWithdrawalMutation = useMutation({
+    mutationFn: async (formData) => {
+      try {
+        const response = await AuthAxios({
+          url: "/bank/trf/outbound/bank/process",
+          method: "POST",
+          data: formData,
+        });
+
+        return response.data;
+      } catch (error) {
+        console.log(error);
+        throw new Error(error.response.data.message);
+      }
+    },
+    onSuccess: (data) => {
+      console.log("data", data);
+
+      notifySuccess(data?.message);
+      setButtonDisabled(false);
+      setOpen2(false);
+      // Handle success, update state, or perform further actions
+    },
+    onError: (error) => {
+      console.log(error);
+      setButtonDisabled(false);
+    },
+  });
+
   const initiateBankWithdrawalMutation = useMutation({
     mutationFn: async (formData) => {
       try {
@@ -96,8 +137,13 @@ const WithdrawFunds = () => {
       }
     },
     onSuccess: (data) => {
-      console.log("data", data);
-      setButtonDisabled(false);
+      const comPayload = {
+        ref: data?.data?.ref,
+        pin: generateRandomCode(),
+      };
+
+      completeBankWithdrawalMutation.mutate(comPayload);
+
       // Handle success, update state, or perform further actions
     },
     onError: (error) => {
@@ -108,6 +154,12 @@ const WithdrawFunds = () => {
 
   const notifyError = (msg) => {
     toast.error(msg, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 6000, // Time in milliseconds
+    });
+  };
+  const notifySuccess = (msg) => {
+    toast.success(msg, {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 6000, // Time in milliseconds
     });
@@ -860,6 +912,7 @@ const WithdrawFunds = () => {
         </Box>
       </Modal>
       {/* Modal ends */}
+      <ToastContainer />
     </Box>
   );
 };

@@ -46,6 +46,7 @@ import {
 } from "../utils/store/merchantSlice";
 import { useNavigate } from "react-router-dom";
 import { AuthAxios } from "../helpers/axiosInstance";
+import FormattedPrice from "./FormattedPrice";
 
 export const TransactionDetails = ({ handleClose1, details }) => {
   const style = {
@@ -58,7 +59,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
     bgcolor: "background.paper",
     p: 3,
   };
-  console.log(details);
+  console.log("hope", details);
   function modDate(value) {
     const date = new Date(value);
     const day = date.getDay();
@@ -127,7 +128,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               minWidth: "130px",
             }}
           >
-            User:
+            Sender Account Name:
           </Typography>
 
           <Typography
@@ -137,9 +138,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               fontSize: "14px",
             }}
           >
-            {details?.approvedBy?.lastName +
-              " " +
-              details?.approvedBy?.firstName ?? " ..."}
+            {details?.origin?.accountName}
           </Typography>
         </Box>
         <Box
@@ -157,7 +156,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               minWidth: "130px",
             }}
           >
-            Email Address:
+            Sender Account Number:
           </Typography>
 
           <Typography
@@ -167,7 +166,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               fontSize: "14px",
             }}
           >
-            {details?.approvedBy?.email ?? " ..."}
+            {details?.origin?.accountNumber ?? " ..."}
           </Typography>
         </Box>
         <Box
@@ -185,7 +184,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               minWidth: "130px",
             }}
           >
-            Phone Number:
+            Recipient Account Name:
           </Typography>
 
           <Typography
@@ -195,7 +194,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               fontSize: "14px",
             }}
           >
-            {details?.approvedBy?.phoneNumber ?? " ..."}
+            {details?.meta?.recipientDetails?.accountName ?? " ..."}
           </Typography>
         </Box>
         <Box
@@ -213,7 +212,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               minWidth: "130px",
             }}
           >
-            Category:
+            Recipient Account Number:
           </Typography>
 
           <Typography
@@ -223,7 +222,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               fontSize: "14px",
             }}
           >
-            {details?.approvedBy?.role ?? " ..."}
+            {details?.meta?.recipientDetails?.accountNumber ?? " ..."}
           </Typography>
         </Box>
         <Box
@@ -251,7 +250,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               fontSize: "14px",
             }}
           >
-            {details?.transactionType ?? "..."}
+            {details?.type ?? "..."}
           </Typography>
         </Box>
         <Box
@@ -279,7 +278,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               fontSize: "14px",
             }}
           >
-            {details?.transactionRef ?? "..."}
+            {details?.id ?? "..."}
           </Typography>
         </Box>
         <Box
@@ -307,35 +306,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               fontSize: "14px",
             }}
           >
-            {modDate(details?.approvedBy?.createdAt)}
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            gap: "2rem",
-            alignItems: "center",
-          }}
-        >
-          <Typography
-            sx={{
-              fomtWeight: "500",
-              color: "#828282",
-              fontSize: "14px",
-              minWidth: "130px",
-            }}
-          >
-            Recipient:
-          </Typography>
-
-          <Typography
-            sx={{
-              color: "#1E1E1E",
-              fontWeight: "600",
-              fontSize: "14px",
-            }}
-          >
-            {details?.remittance?.phoneNumber ?? "..."}
+            {modDate(details?.createdAt)}
           </Typography>
         </Box>
 
@@ -364,7 +335,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               fontSize: "14px",
             }}
           >
-            {details?.remittance?.amount ?? "..."}
+            <FormattedPrice amount={details?.amount ?? 0} />
           </Typography>
         </Box>
         <Box
@@ -392,7 +363,7 @@ export const TransactionDetails = ({ handleClose1, details }) => {
               fontSize: "14px",
             }}
           >
-            {details?.transactionStatus ?? "..."}
+            {details?.status ?? "..."}
           </Typography>
         </Box>
       </Box>

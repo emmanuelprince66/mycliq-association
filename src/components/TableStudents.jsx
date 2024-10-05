@@ -112,7 +112,7 @@ const TableStudents = () => {
     const [_key, { page, limit }] = queryKey;
     try {
       const response = await AuthAxios.get(
-        `/merchant/trx?page=${page}&limit=${limit}&type=user`
+        `/merchant/trx?page=${page}&limit=${limit}&type=payment`
       );
       return response?.data?.data;
     } catch (error) {

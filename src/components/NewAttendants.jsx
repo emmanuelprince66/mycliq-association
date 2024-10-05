@@ -61,7 +61,7 @@ const NewAttendants = () => {
 
         return response.data;
       } catch (error) {
-        console.log(error);
+        consaole.log(error);
         throw new Error(error.response.data.message);
       }
     },

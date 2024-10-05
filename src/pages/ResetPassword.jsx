@@ -129,8 +129,8 @@ const ResetPassword = () => {
   const mutationReset = useMutation({
     mutationFn: async (token) => {
       try {
-        const response = await axios.patch(
-          "https://check-server-api-staging.herokuapp.com/api/v1/auth/password-change",
+        const response = await axios.post(
+          "https://mycliq-prod-e2c876691052.herokuapp.com/api/v1/auth/password-change",
           {
             currentPassword: currentPasswordInput,
             newPassword: newPasswordInput,

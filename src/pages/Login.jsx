@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import loginImg from "../assets/images/assoclogin.png";
 import checkIcon from "../assets/images/logo.png";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -19,6 +19,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useDispatch } from "react-redux";
 import emailIcon from "../assets/images/user.svg";
 import { useNavigate } from "react-router";
 import lockIcon from "../assets/images/lock.svg";
@@ -28,12 +29,15 @@ import { AuthAxios, BaseAxios } from "../helpers/axiosInstance";
 import CircularProgress from "@mui/material/CircularProgress";
 import Cookies from "js-cookie";
 import Visibility from "@mui/icons-material/Visibility";
+import { fillSelectedDates } from "../utils/store/merchantSlice";
+
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
 import "react-toastify/dist/ReactToastify.min.css";
 
 export const Login = () => {
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -108,6 +112,19 @@ export const Login = () => {
     // Call the mutation to trigger the login process
     loginMutation.mutate(formData);
   };
+
+  useEffect(() => {
+    const now = new Date();
+    const startOfMonth = new Date();
+    const endOfMonth = new Date();
+
+    dispatch(
+      fillSelectedDates({
+        startDate: startOfMonth,
+        endDate: endOfMonth,
+      })
+    );
+  }, []);
   return (
     <main className="flex md:grid md:grid-cols-2 flex-col-reverse min-h-screen">
       <section className="bg-brown_1 hidden  md:flex items-center pb-5 md:pb-0 justify-center">
