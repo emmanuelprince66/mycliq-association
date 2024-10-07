@@ -481,6 +481,7 @@ const TableCom = () => {
                 <TableCell>Transaction ID</TableCell>
                 <TableCell>User</TableCell>
                 <TableCell>Transaction Type</TableCell>
+                <TableCell>Sub Type</TableCell>
                 <TableCell>Amount(N)</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Action</TableCell>
@@ -569,6 +570,7 @@ const TableCom = () => {
                         : item?.recipientDetails?.accountName}
                     </TableCell>
                     <TableCell>{item?.type}</TableCell>
+                    <TableCell>{item?.subType}</TableCell>
                     <TableCell>{item?.amount}</TableCell>
                     <TableCell>
                       <Box

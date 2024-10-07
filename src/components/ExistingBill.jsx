@@ -1,24 +1,64 @@
 import React, { useState, useEffect } from "react";
 import colorContact from "../assets/colorContact.svg";
 import Badge from "@mui/material/Badge";
-import { Box, Typography, responsiveFontSizes } from "@mui/material";
+import {
+  Box,
+  Button,
+  Modal,
+  Typography,
+  responsiveFontSizes,
+} from "@mui/material";
 import { Switch } from "@mui/material";
 import { AuthAxios } from "../helpers/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { fillBills } from "../utils/store/merchantSlice";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import closeIcon from "../assets/images/closeIcon.svg";
+import { ToastContainer, toast } from "react-toastify";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  borderRadius: "12px",
+  width: "640px",
+  bgcolor: "background.paper",
+  p: 3,
+};
 const ExistingBill = () => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [bill, setBill] = useState(null);
   const [checkedSuccess, setCheckedSuccess] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [url, setUrl] = useState("");
+
+  const [copySuccess, setCopySuccess] = useState({}); // State to track copy status per item
+
   const { userDetails, bills } = useSelector((state) => state);
+  const [urlId, setUrlId] = useState("");
   const rowsPerPage = 20;
   const [currentPage, setCurrentPage] = useState(1);
+  const [open2, setOpen2] = React.useState(false);
+  const handleClose2 = () => setOpen2(false);
+
+  const notifyError = (msg) => {
+    toast.error(msg, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 6000, // Time in milliseconds
+    });
+  };
+  const notifySuccess = (msg) => {
+    toast.success(msg, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 6000, // Time in milliseconds
+    });
+  };
 
   const fetchExistingData = async ({ queryKey }) => {
     const [_key, { page, limit }] = queryKey;
@@ -35,6 +75,7 @@ const ExistingBill = () => {
   const {
     data: ExistingBills,
     error,
+    refetch,
     isLoading,
   } = useQuery({
     queryKey: ["AllExistingBills", { page: currentPage, limit: rowsPerPage }],
@@ -43,6 +84,7 @@ const ExistingBill = () => {
     staleTime: 5000, // Cache data for 5 seconds
   });
 
+  console.log("eee", ExistingBills);
   const totalPages = ExistingBills?.totalPages || "";
 
   const handlePageChange = (page) => {
@@ -84,6 +126,46 @@ const ExistingBill = () => {
       return null;
     }
   }
+
+  const disableBillMutatation = useMutation({
+    mutationFn: async () => {
+      try {
+        const response = await AuthAxios({
+          url: `/merchant/bill/association/${urlId}/suspend`,
+          method: "PATCH",
+        });
+
+        return response.data;
+      } catch (error) {
+        throw new Error(error.response.data.message);
+      }
+    },
+    onSuccess: (data) => {
+      notifySuccess(data?.message);
+      refetch();
+      setButtonDisabled(false);
+      setOpen2(false);
+    },
+    onError: (error) => {
+      console.log(error);
+      setButtonDisabled(false);
+      setOpen2(false);
+    },
+  });
+
+  const sortedData = ExistingBills
+    ? ExistingBills?.records?.filter((item) => item?.isActive === true)
+    : [];
+
+  const handleOpenIniModal = (id) => {
+    setOpen2(true);
+    setUrlId(id);
+  };
+
+  const handleDisable = () => {
+    disableBillMutatation.mutate();
+    setButtonDisabled(true);
+  };
   async function checkBill(e, i) {
     const disabledStatus = bills[i].isDisabled ? false : true;
 
@@ -102,6 +184,26 @@ const ExistingBill = () => {
       console.log(error);
     }
   }
+
+  const copyToClipboard = (url, id) => {
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setCopySuccess((prev) => ({
+          ...prev,
+          [id]: "Copied!", // Set copy success for specific item
+        }));
+        setTimeout(() => {
+          setCopySuccess((prev) => ({
+            ...prev,
+            [id]: "", // Reset message for specific item after 2 seconds
+          }));
+        }, 2000);
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+  };
   return (
     <Box
       sx={{
@@ -149,8 +251,8 @@ const ExistingBill = () => {
           size="5.2rem"
           sx={{ color: "#DC0019", marginLeft: "50%", marginTop: "5em" }}
         />
-      ) : ExistingBills?.records?.length > 0 ? (
-        ExistingBills?.records?.map((item, i) => {
+      ) : sortedData?.length > 0 ? (
+        sortedData?.map((item, i) => {
           return (
             <Box
               key={item.id}
@@ -202,6 +304,19 @@ const ExistingBill = () => {
                       }}
                     >
                       {item.billName}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontWeight: "500",
+                        fontSize: "12px",
+                        width: "54px",
+                        padding: "2px 8px 2px 8px",
+                        borderRadius: "8px",
+                        background: "#FFEFD6",
+                        height: "22px",
+                      }}
+                    >
+                      {item?.isActive && "Active"}
                     </Typography>
                     <Typography
                       sx={{
@@ -259,6 +374,25 @@ const ExistingBill = () => {
                       1,090 Paid, 789 Verified
                     </Typography>
                   </Box>
+                  <div className="w-full cursor-pointer">
+                    <div className="flex items-center gap-2 ">
+                      <p className="text-[#1e1e1e]">URL:</p>
+                      <p className="text-[#1e1e1e]">{`https://mycliq-association-two.vercel.app/create-association/${item?.id}`}</p>{" "}
+                    </div>
+                    {/* Display the dynamic URL */}
+                    <button
+                      className="bg-blue-500 text-white p-1 text-[10px] rounded-md mt-2 hover:bg-blue-600"
+                      onClick={() =>
+                        copyToClipboard(
+                          `https://mycliq-association-two.vercel.app/create-association/${item?.id}`,
+                          item?.id
+                        )
+                      }
+                    >
+                      Copy
+                    </button>
+                    {copySuccess[item?.id] && <p>{copySuccess[item?.id]}</p>}
+                  </div>
                 </Box>
               </Box>
 
@@ -266,7 +400,7 @@ const ExistingBill = () => {
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "2px",
+                  gap: "8px",
                 }}
               >
                 <Typography
@@ -280,53 +414,23 @@ const ExistingBill = () => {
                   Stop Accepting Payments
                 </Typography>
 
-                <Box
-                  sx={{
-                    mb: "0.5rem",
-                  }}
-                >
-                  <Switch
-                    checked={item.isDisabled}
-                    onChange={(e) => checkBill(e, i)}
+                <Box sx={{}}>
+                  <Button
+                    onClick={() => handleOpenIniModal(item?.id)}
                     sx={{
-                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                        {
-                          backgroundColor: "#DC0019",
-                          opacity: 1, // Customize track background color when checked
-                        },
-                      "& .MuiSwitch-switchBase.Mui-focusVisible .MuiSwitch-thumb":
-                        {
-                          color: "#52d869", // Customize thumb color when focused
-                          border: "6px solid #fff",
-                        },
-                      "& .MuiSwitch-switchBase": {
-                        padding: "1px",
-
-                        color: "#fff",
-                        "&.Mui-checked": {
-                          transform: "translateX(15px)",
-                          color: "#fff",
-                        },
-                      },
-                      "& .MuiSwitch-thumb": {
-                        width: "20px",
-                        height: "20px",
-                        marginTop: "0.8rem",
-                        marginLeft: "0.8rem",
-                        backgroundColor: "#f0f0f0", // Customize thumb background color
-                      },
-                      "& .MuiSwitch-track": {
-                        borderRadius: 26 / 2,
-                        border: "1px solid #ccc",
-
-                        height: "1.5rem",
-                        backgroundColor: "#f8f8f8", // Customize track background color
-                        opacity: 1,
-                        transition:
-                          "background-color 0.4s ease-in-out, border 0.4s ease-in-out",
+                      background: "#dc0019",
+                      fontSize: "10px",
+                      borderRadius: "8px",
+                      py: "3px",
+                      px: "0",
+                      color: "#fff",
+                      "&:hover": {
+                        backgroundColor: "#dc0019",
                       },
                     }}
-                  />
+                  >
+                    Yes
+                  </Button>
                 </Box>
               </Box>
             </Box>
@@ -338,6 +442,114 @@ const ExistingBill = () => {
           No Bills yet!. Create a bill to see one.{" "}
         </Typography>
       )}{" "}
+      {/* Modal for create bill*/}
+      <Modal
+        open={open2}
+        onClose={handleClose2}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        PaperProps={{
+          sx: {
+            border: "none", // Remove the border
+            boxShadow: "none", // Remove the box shadow
+          },
+        }}
+      >
+        <Box sx={style}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography
+              sx={{
+                fomtWeight: "900",
+                color: "#1E1E1E",
+                fontWeight: "500",
+                fontSize: "20px",
+              }}
+            >
+              Disable Bill
+            </Typography>
+
+            <Box onClick={handleClose2}>
+              <img src={closeIcon} alt="c-icon" />
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "start",
+              mt: "2rem",
+              mb: "1.5rem",
+            }}
+          >
+            <Typography
+              sx={{
+                fontWeight: "600",
+                fontSize: "16px",
+                color: "#4F4F4F",
+                lineHeight: "24px",
+              }}
+            >
+              Are you sure you want to stop accepting payment?{" "}
+            </Typography>
+
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "25px",
+                mt: "2rem",
+              }}
+            >
+              <Button
+                sx={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "8px",
+                  border: "1px solid #dc0019",
+                  color: "#dc0019",
+                  borderColor: "#dc0019",
+                  "&:hover": {
+                    borderColor: "#dc0019",
+                  },
+                }}
+                variant="outlined"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDisable}
+                sx={{
+                  background: "#dc0019",
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "8px",
+                  color: "#fff",
+                  "&:hover": {
+                    backgroundColor: "#dc0019",
+                  },
+                }}
+              >
+                {buttonDisabled ? (
+                  <CircularProgress size="1.2rem" sx={{ color: "white" }} />
+                ) : (
+                  "Yes, Stop"
+                )}
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Modal>
+      {/* Modal ends */}
+      <ToastContainer />
     </Box>
   );
 };
