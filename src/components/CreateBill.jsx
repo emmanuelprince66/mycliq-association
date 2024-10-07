@@ -42,6 +42,8 @@ const CreateBill = () => {
   const [facultyName, setFacultyName] = useState("");
   const [departmentName, setDepartmentName] = useState("");
   const [fresherAmount, setFresherAmount] = useState("");
+
+  const [url, setUrl] = useState("");
   const [staylitesAmount, setStaylitesAmount] = useState("");
   const [focusBorder, setFocusBorder] = useState("");
   const [open1, setOpen1] = React.useState(false);
@@ -49,6 +51,8 @@ const CreateBill = () => {
   const [formDisabled, setFormDisabled] = React.useState(true);
   const [formContent, setFormContent] = React.useState({});
   const handleClose1 = () => setOpen1(false);
+  const [copySuccess, setCopySuccess] = useState("");
+
   function resetForm() {
     setBillName("");
     setStaylitesAmount("");
@@ -92,7 +96,13 @@ const CreateBill = () => {
         "merchant/bill/association",
         payload
       );
-      console.log(response);
+      console.log("res", response);
+
+      const urlDeclaration = `https://mycliq-association.vercel.app/create-association/${response?.data?.data?.id}`;
+      setUrl(urlDeclaration);
+
+      console.log(response?.data?.data);
+
       setLoading(false);
       setOpen1(true);
       setOpen2(false);
@@ -125,6 +135,18 @@ const CreateBill = () => {
     console.log(dateForForm);
     setDateToBeSent(dateForForm);
     setOpen2(true);
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setCopySuccess("Copied!");
+        setTimeout(() => setCopySuccess(""), 2000); // Reset message after 2 seconds
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
   };
 
   return (
@@ -913,6 +935,18 @@ const CreateBill = () => {
             >
               New bill created successfully and is now live!
             </Typography>
+            <div className="w-full rounded-md p-2 border-2 border-slate-200 my-4 cursor-pointer">
+              <p className="text-[#1e1e1e]">URL:</p>
+              <p className="text-[#1e1e1e]">{url}</p>{" "}
+              {/* Display the dynamic URL */}
+              <button
+                className="bg-blue-500 text-white p-1 text-[10px] rounded-md mt-2 hover:bg-blue-600"
+                onClick={copyToClipboard}
+              >
+                Copy
+              </button>
+              {copySuccess && <p className="text-green-500">{copySuccess}</p>}
+            </div>
           </Box>
           <Box
             sx={{

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import {
   Box,
@@ -19,6 +19,10 @@ import { styled } from "@mui/system";
 import { useMediaQuery, useTheme } from "@mui/material";
 import ConfirmAssociationBill from "./create-association/ConfirmAssociationBill";
 import Payment from "./create-association/Payment";
+import { useQuery } from "@tanstack/react-query";
+
+import { useParams } from "react-router-dom";
+import { AuthAxios } from "../helpers/axiosInstance";
 const CreateAssociationBill = () => {
   const [studentName, setStudentName] = useState(null);
   const [nameError, setNameError] = useState("");
@@ -27,12 +31,15 @@ const CreateAssociationBill = () => {
   const [matricNo, setMatricNo] = useState(null);
   const [matricError, setMatricError] = useState("");
   const [email, setEmail] = useState(null);
+  const [price, setPrice] = useState(null);
+  const [comAmt, setComAmt] = useState(100);
   const [emailError, setEmailError] = useState("");
   const [phoneNo, setPhoneNo] = useState(null);
   const [phoneError, setPhoneError] = useState("");
   const [studentType, setStudentType] = useState("fresher");
   const [level, setLevel] = useState("");
   const theme = useTheme();
+  const { id: associationBillId } = useParams();
 
   const [showScreen, setShowScreen] = useState("create");
   const isTabletOrDesktop = useMediaQuery(theme.breakpoints.up("sm"));
@@ -48,6 +55,46 @@ const CreateAssociationBill = () => {
     }
   };
 
+  // fetch association bills data
+  const fetchAssociationBillData = async ({ queryKey }) => {
+    const [_key, { id }] = queryKey;
+    try {
+      const response = await AuthAxios.get(`/wbhk/association-payment/${id}`);
+      return response?.data?.data;
+    } catch (error) {
+      throw new Error("Failed to fetch bill data");
+    }
+  };
+
+  const {
+    data: associationBillsData,
+    error: assBErr,
+    isLoading: assBLoading,
+  } = useQuery({
+    queryKey: ["fetchAssociationBillsData", { id: associationBillId }],
+    queryFn: fetchAssociationBillData,
+    keepPreviousData: true,
+    staleTime: 5000, // Cache data for 5 seconds
+  });
+
+  useEffect(() => {
+    if (associationBillsData) {
+      if (studentType === "fresher") {
+        setPrice(associationBillsData?.prices[0]?.value);
+      } else {
+        setPrice(associationBillsData?.prices[1]?.value);
+      }
+    }
+  }, [associationBillsData, studentType]);
+
+  useEffect(() => {
+    if (associationBillsData) {
+      setDepartmentName(associationBillsData?.department);
+    }
+  }, [associationBillsData]);
+
+  console.log("hello", associationBillsData);
+  // fetch association bills data end
   const handleLevelChange = (event) => {
     setLevel(event.target.value);
   };
@@ -387,6 +434,7 @@ const CreateAssociationBill = () => {
                       },
                       mx: "auto",
                     }}
+                    disabled
                     onChange={handleDepartmentChange}
                     onBlur={handleDepartmentChangeBlurr}
                     value={departmentName}
@@ -537,7 +585,7 @@ const CreateAssociationBill = () => {
                       You are Paying
                     </p>
                     <p className="text-[#1E1E1E] font-[600] text-[14px]">
-                      <FormattedPrice amount={20000} />
+                      <FormattedPrice amount={price} />
                     </p>
                   </div>
                   <div className="flex justify-between items-center ">
@@ -545,7 +593,7 @@ const CreateAssociationBill = () => {
                       Service charge
                     </p>
                     <p className="text-[#1E1E1E] font-[600] text-[14px]">
-                      <FormattedPrice amount={100} />
+                      <FormattedPrice amount={comAmt} />
                     </p>
                   </div>
 
@@ -556,7 +604,9 @@ const CreateAssociationBill = () => {
                       Total
                     </p>
                     <p className="text-[#1E1E1E] font-[600] text-[16px]">
-                      <FormattedPrice amount={21000} />
+                      <FormattedPrice
+                        amount={parseInt(price) + parseInt(comAmt)}
+                      />
                     </p>
                   </div>
                 </div>

@@ -31,7 +31,7 @@ const myRoutes = [
   { component: <ResetPassword />, path: "/reset", name: "Reset" },
   {
     component: <CreateAssociationBill />,
-    path: "/create-association",
+    path: "/create-association/:id?",
     name: "Cassociation",
   },
   { component: <Attendants />, path: "/attendants", name: "Attendants" },
@@ -58,7 +58,10 @@ const RoutesContainer = () => {
         <Router>
           <Routes>
             {myRoutes.map((item) => {
-              if (item.path === "/" || item.path === "/create-association") {
+              if (
+                item.path === "/" ||
+                item.path === "/create-association/:id?"
+              ) {
                 return (
                   <Route
                     key={item.name}
