@@ -6,7 +6,6 @@
     },
     {
       "source": "/(.*)",
-      "has": [{ "type": "file" }],
       "destination": "/index.html"
     }
   ],
