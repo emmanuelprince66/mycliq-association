@@ -7,7 +7,7 @@ import { getCookie, setCookie } from "../utils/cookieAuth";
 // });
 
 export const AuthAxios = Axios.create({
-  baseURL: "https://mycliq-prod-e2c876691052.herokuapp.com/api",
+  baseURL: "https://mycliq-backend-1.onrender.com/api",
   withCredentials: false,
 });
 
@@ -18,7 +18,7 @@ export const AuthAxios = Axios.create({
 // });
 
 export const BaseAxios = Axios.create({
-  baseURL: "https://mycliq-prod-e2c876691052.herokuapp.com/api",
+  baseURL: "https://mycliq-backend-1.onrender.com/api",
   withCredentials: false,
 });
 
