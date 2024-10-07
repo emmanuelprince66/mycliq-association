@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/create-association/:id",
-      "destination": "/index.html"
+      "destination": "/create-association"
     },
     {
       "source": "/(.*)",
