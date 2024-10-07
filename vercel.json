@@ -3,10 +3,17 @@
     {
       "source": "/create-association/:id",
       "destination": "/index.html"
-    },
+    }
+  ],
+  "headers": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/(.*).(js|css|svg|png|jpg|woff2?|ttf)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=UTF-8"
+        }
+      ]
     }
   ]
 }
