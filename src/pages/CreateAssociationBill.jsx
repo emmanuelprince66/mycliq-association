@@ -19,10 +19,11 @@ import { styled } from "@mui/system";
 import { useMediaQuery, useTheme } from "@mui/material";
 import ConfirmAssociationBill from "./create-association/ConfirmAssociationBill";
 import Payment from "./create-association/Payment";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { useParams } from "react-router-dom";
 import { AuthAxios } from "../helpers/axiosInstance";
+import { common } from "@mui/material/colors";
 const CreateAssociationBill = () => {
   const [studentName, setStudentName] = useState(null);
   const [nameError, setNameError] = useState("");
@@ -37,7 +38,8 @@ const CreateAssociationBill = () => {
   const [phoneNo, setPhoneNo] = useState(null);
   const [phoneError, setPhoneError] = useState("");
   const [studentType, setStudentType] = useState("fresher");
-  const [level, setLevel] = useState("");
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [level, setLevel] = useState("200");
   const theme = useTheme();
   const { id: associationBillId } = useParams();
 
@@ -188,17 +190,58 @@ const CreateAssociationBill = () => {
     }
   };
 
-  const handleFormSubmit = () => {
+  const initatiatePaymentMutation = useMutation({
+    mutationFn: async (formData) => {
+      try {
+        const response = await AuthAxios({
+          url: `/wbhk/association-payment/${id}`,
+          method: "POST",
+          data: formData,
+        });
+
+        return response.data;
+      } catch (error) {
+        console.log(error);
+        setButtonDisabled(false);
+        throw new Error(error.response.data.message);
+      }
+    },
+    onSuccess: (data) => {
+      console.log("data", data);
+      setButtonDisabled(false);
+    },
+    onError: (error) => {
+      console.log(error);
+      setButtonDisabled(false);
+    },
+  });
+
+  const handleInitiatePayment = () => {
     const payload = {
-      type: studentType,
-      level: level,
-      studentName: studentName,
-      departmentName: departmentName,
-      matricNo: matricNo,
-      phoneNo: phoneNo,
+      status: studentType,
+      level: studentType === "fresher" ? "100" : level,
+      name: studentName,
+      department: departmentName,
+      matricNum: matricNo,
+      phone: phoneNo,
       email: email,
     };
+
+    if (
+      studentName === "" ||
+      matricNo === "" ||
+      phoneNo === "" ||
+      email === ""
+    ) {
+      console.log("error");
+      return;
+    }
+
+    initatiatePaymentMutation.mutate(payload);
+
+    console.log("pay", payload);
   };
+  const handleFormSubmit = () => {};
 
   return (
     <div className="w-full">
@@ -614,7 +657,7 @@ const CreateAssociationBill = () => {
 
               <Grid item xs={12} md={6} lg={6}>
                 <Button
-                  onClick={() => setShowScreen("confirm")}
+                  onClick={handleInitiatePayment}
                   sx={{
                     background: "#333333",
                     width: "100%",
