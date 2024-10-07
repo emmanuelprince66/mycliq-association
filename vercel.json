@@ -6,7 +6,19 @@
     },
     {
       "source": "/(.*)",
+      "has": [{ "type": "file" }],
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*).(js|css|svg|png|jpg|woff2?|ttf)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/javascript; charset=UTF-8"
+        }
+      ]
     }
   ]
 }
