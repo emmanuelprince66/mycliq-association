@@ -1,9 +1,12 @@
 {
-   "rewrites": [
-     {
-       "source": "/(.*)",
-       "destination": "/index.html"
-     }
-   ]
- }
- 
+  "rewrites": [
+    {
+      "source": "/create-association/:id",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
