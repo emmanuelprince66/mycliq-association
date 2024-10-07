@@ -3,6 +3,10 @@
     {
       "source": "/create-association/:id",
       "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
@@ -11,7 +15,7 @@
       "headers": [
         {
           "key": "Content-Type",
-          "value": "application/javascript; charset=UTF-8"
+          "value": "application/octet-stream"
         }
       ]
     }
