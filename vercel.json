@@ -1,22 +1,57 @@
 {
   "rewrites": [
     {
-      "source": "/create-association/:id",
+      "source": "/create-association/:id?",
       "destination": "/index.html"
     },
     {
       "source": "/(.*)",
-      "has": [{ "type": "file" }],
       "destination": "/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/(.*).(js|css|svg|png|jpg|woff2?|ttf)",
+      "source": "/(.*).js",
       "headers": [
         {
           "key": "Content-Type",
-          "value": "text/javascript; charset=UTF-8"
+          "value": "application/javascript; charset=UTF-8"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).css",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/css; charset=UTF-8"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).(svg|png|jpg|jpeg)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "image/*"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).woff2?",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "font/woff2"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).ttf",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "font/ttf"
         }
       ]
     }
