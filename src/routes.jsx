@@ -60,16 +60,16 @@ const RoutesContainer = () => {
           <Routes>
             {myRoutes.map((item) => {
               if (item.path !== "/") {
-                // if (item?.case === "association") {
-                //   return (
-                //     <Route
-                //       key={item.name}
-                //       path={item.path}
-                //       inde
-                //       element={item.component}
-                //     />
-                //   );
-                // }
+                if (item?.case === "association") {
+                  return (
+                    <Route
+                      key={item.name}
+                      path={item.path}
+                      index
+                      element={item.component}
+                    />
+                  );
+                }
                 const ComponentWithAuth = (
                   <AuthProvider>
                     <Mainlayout component={item.component} />
