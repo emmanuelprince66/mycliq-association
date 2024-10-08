@@ -272,7 +272,7 @@ const CreateAssociationBill = () => {
   return (
     <div className="w-full">
       {showScreen === "create" && (
-        <div className="md:w-[70%] w-full mx-auto p-3  md:p-3">
+        <div className="md:w-[70%] w-full mx-auto p-3 pr-9  md:p-3">
           {assBLoading ? (
             <CircularProgress size="1.2rem" sx={{ color: "#ff7f00" }} />
           ) : (
@@ -292,10 +292,10 @@ const CreateAssociationBill = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col items-start gap-3 mt-8">
-                <Grid container spacing={2} sx={{ width: "100%" }}>
+              <div className="flex flex-col items-start gap-3 mt-8 w-full">
+                <Grid container spacing={2} sx={{ width: "100%", mx: "auto" }}>
                   <Grid item xs={12} md={6}>
-                    <FormControl component="fieldset" sx={{ padding: "10px" }}>
+                    <FormControl component="fieldset">
                       <Typography
                         htmlFor="input"
                         sx={{
