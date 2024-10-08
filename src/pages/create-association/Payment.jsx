@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import copy from "../../assets/images/admin/copy.svg";
@@ -7,10 +7,71 @@ import { useState } from "react";
 import right from "../../assets/images/admin/url/right.svg";
 import danger from "../../assets/images/admin/url/danger.svg";
 import { useMediaQuery, useTheme } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+import { AuthAxios } from "../../helpers/axiosInstance";
+import FormattedPrice from "../../components/FormattedPrice";
 
-const Payment = ({ setShowScreen }) => {
+const Payment = ({ setShowScreen, initiateBillData }) => {
+  console.log("ini", initiateBillData);
+
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (initiateBillData?.bankDetails?.accountNumber) {
+      navigator.clipboard
+        .writeText(initiateBillData?.bankDetails?.accountNumber)
+        .then(() => {
+          setIsCopied(true);
+
+          // Hide "Copied" message after 1 second
+          setTimeout(() => {
+            setIsCopied(false);
+          }, 1000);
+        });
+    }
+  };
+
+  const expiryDate = new Date(
+    initiateBillData?.bankDetails?.expiryDate
+  ).getTime(); // Your expiry date
+  const [timeLeft, setTimeLeft] = useState({});
+
+  // Function to calculate the time difference
+  const calculateTimeLeft = () => {
+    const now = new Date().getTime();
+    const difference = expiryDate - now;
+
+    // Calculate days, hours, minutes, seconds
+    let timeLeft = {};
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor(
+          (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        ),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000),
+      };
+    }
+
+    return timeLeft;
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    // Cleanup timer
+    return () => clearInterval(timer);
+  }, []);
+
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [openDangerModal, setOpenDangerModal] = useState(false);
+
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [makePaymentData, setMakePaymentData] = useState(null);
+  const [refId, setRefId] = useState(null);
   const theme = useTheme();
 
   const isTabletOrDesktop = useMediaQuery(theme.breakpoints.up("sm"));
@@ -26,6 +87,49 @@ const Payment = ({ setShowScreen }) => {
     width: !isTabletOrDesktop ? "345px" : "565px",
     bgcolor: "background.paper",
     p: 3,
+  };
+
+  const notifyError = (msg) => {
+    toast.error(msg, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 6000, // Time in milliseconds
+    });
+  };
+  const notifySuccess = (msg) => {
+    toast.success(msg, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 6000, // Time in milliseconds
+    });
+  };
+
+  const makePaymentMutation = useMutation({
+    mutationFn: async () => {
+      try {
+        const response = await AuthAxios({
+          url: `/wbhk/association-payment/${refId}/confirm`,
+          method: "GET",
+        });
+
+        return response.data;
+      } catch (error) {
+        notifyError(error?.response?.data?.message);
+        setButtonDisabled(false);
+        throw new Error(error.response.data.message);
+      }
+    },
+    onSuccess: (data) => {
+      console.log("data-ffr", data);
+      setButtonDisabled(false);
+    },
+    onError: (error) => {
+      console.log(error);
+      notifyError();
+      setButtonDisabled(false);
+    },
+  });
+  const handleMakePayment = () => {
+    setButtonDisabled(true);
+    makePaymentMutation.mutate();
   };
   return (
     <div className="md:w-[70%] w-full mx-auto p-3  md:p-3">
@@ -44,15 +148,26 @@ const Payment = ({ setShowScreen }) => {
         <p className="font-normal text-[16px] text-[#535353]">
           Note: Kindly transfer exact amount to the account details below.
           Account number is valid for
-          <span className="text-[#FF7F00] ml-1 leading-10">59:14</span>
+          <span className="text-[#FF7F00] ml-1 leading-10">
+            {timeLeft ? (
+              <div className="text-1xl  space-x-4">
+                <span>{timeLeft.minutes || 0}m</span> :
+                <span>{timeLeft.seconds || 0}s</span>
+              </div>
+            ) : (
+              <div>Time's up!</div>
+            )}
+          </span>
         </p>
       </div>
 
       <div className="w-full rounded-md p-3 border border-[#F2F2F2] mt-4 bg-[#FBFBFB]">
         <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
-          <p className="font-normal text-[12px] text-[#535353 ]">Bank Name</p>
+          <p className="font-normal text-[12px] text-[#535353 ]">
+            Account Name
+          </p>
           <p className="font-[600] text-[14px] text-[#1e1e1e]">
-            Safe Haven Microfinance Bank
+            {initiateBillData?.bankDetails?.accountName}
           </p>
         </div>
         <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
@@ -60,16 +175,26 @@ const Payment = ({ setShowScreen }) => {
             Account Number
           </p>
           <div className="w-full flex items-center gap-2">
-            <p className="font-[600] text-[14px] text-[#1e1e1e]">2085209073</p>
-            <img src={copy} alt="" />
+            <p className="font-[600] text-[14px] text-[#1e1e1e]">
+              {initiateBillData?.bankDetails?.accountNumber}
+            </p>
+
+            <div className="cursor-pointer relative" onClick={handleCopy}>
+              <img src={copy} alt="Copy icon" />
+
+              {/* Show "Copied!" message if isCopied is true */}
+              {isCopied && (
+                <span className="absolute left-12 text-green-500 font-bold text-xs bottom-[1px]">
+                  Copied!
+                </span>
+              )}
+            </div>
           </div>
         </div>
         <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
-          <p className="font-normal text-[12px] text-[#535353 ]">
-            Account Name
-          </p>
+          <p className="font-normal text-[12px] text-[#535353 ]">Bank Name</p>
           <p className="font-[600] text-[14px] text-[#1e1e1e]">
-            Emmanuel Ochigbo
+            {initiateBillData?.bankDetails?.bankCode}
           </p>
         </div>
       </div>
@@ -78,7 +203,14 @@ const Payment = ({ setShowScreen }) => {
         <div className="flex flex-col items-start gap-3 w-full">
           <div className="flex justify-between items-center w-full">
             <p className="font-[400] text-[17px] text-[#5e5e5e]">Total</p>
-            <p className="font-[500] text-[21px] text-[#1e1e1e]">N22,000</p>
+            <p className="font-[500] text-[21px] text-[#1e1e1e]">
+              <FormattedPrice
+                amount={
+                  parseInt(initiateBillData?.amount) +
+                  parseInt(initiateBillData?.fees)
+                }
+              />
+            </p>
           </div>
 
           <div className="flex flex-col md:flex-row w-full md:w-[70%] gap-0 md:gap-3">
@@ -100,7 +232,11 @@ const Payment = ({ setShowScreen }) => {
                 },
               }}
             >
-              Click here after transfer
+              {buttonDisabled ? (
+                <CircularProgress size="1.2rem" sx={{ color: "white" }} />
+              ) : (
+                "Click here after transfer"
+              )}
             </Button>{" "}
             <Button
               onClick={() => setShowScreen("create")}

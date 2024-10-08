@@ -34,12 +34,13 @@ const CreateAssociationBill = () => {
   const [matricError, setMatricError] = useState("");
   const [email, setEmail] = useState(null);
   const [price, setPrice] = useState(null);
-  const [comAmt, setComAmt] = useState(100);
+  const [comAmt, setComAmt] = useState(50);
   const [emailError, setEmailError] = useState("");
   const [phoneNo, setPhoneNo] = useState(null);
   const [phoneError, setPhoneError] = useState("");
   const [studentType, setStudentType] = useState("fresher");
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [initiateBillData, setInitiateBillData] = useState(null);
   const [level, setLevel] = useState("200");
   const theme = useTheme();
   const { id: associationBillId } = useParams();
@@ -51,6 +52,11 @@ const CreateAssociationBill = () => {
       color: "#333333",
     },
   }));
+
+  useEffect(() => {
+    console.log("CreateAssociationBill component mounted");
+  }, []);
+
   const handleStudentTypeChange = (event) => {
     setStudentType(event.target.value);
     if (event.target.value === "fresher") {
@@ -209,8 +215,9 @@ const CreateAssociationBill = () => {
       }
     },
     onSuccess: (data) => {
-      console.log("data-ffr", data);
-      // setShowScreen("confirm")
+      console.log("data-ffr", data?.data);
+      setInitiateBillData(data?.data);
+      setShowScreen("confirm");
       setButtonDisabled(false);
     },
     onError: (error) => {
@@ -678,7 +685,6 @@ const CreateAssociationBill = () => {
                   <Grid item xs={12} md={6} lg={6}>
                     <Button
                       onClick={handleInitiatePayment}
-                      disabled={buttonDisabled}
                       sx={{
                         background: "#333333",
                         width: "100%",
@@ -713,10 +719,18 @@ const CreateAssociationBill = () => {
       )}
 
       {showScreen === "confirm" && (
-        <ConfirmAssociationBill setShowScreen={setShowScreen} />
+        <ConfirmAssociationBill
+          initiateBillData={initiateBillData}
+          setShowScreen={setShowScreen}
+        />
       )}
 
-      {showScreen === "payment" && <Payment setShowScreen={setShowScreen} />}
+      {showScreen === "payment" && (
+        <Payment
+          initiateBillData={initiateBillData}
+          setShowScreen={setShowScreen}
+        />
+      )}
     </div>
   );
 };

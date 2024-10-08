@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import FormattedPrice from "../../components/FormattedPrice";
-import { Button, Divider } from "@mui/material";
-const ConfirmAssociationBill = ({ setShowScreen }) => {
+import { Button, CircularProgress, Divider } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+import { ToastContainer, toast } from "react-toastify";
+import { AuthAxios } from "../../helpers/axiosInstance";
+const ConfirmAssociationBill = ({ setShowScreen, initiateBillData }) => {
+  console.log("cosmos", initiateBillData);
+
   return (
     <div className=" md:w-[70%] w-full mx-auto p-3  md:p-3">
       <div className="flex items-center gap-3">
@@ -26,52 +31,60 @@ const ConfirmAssociationBill = ({ setShowScreen }) => {
         </p>
 
         <div className="w-full rounded-md p-3 border border-[#F2F2F2] bg-[#FBFBFB]">
-          <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
+          {/* <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
             <p className="font-normal text-[12px] text-[#535353 ]">
               Institution
             </p>
             <p className="font-[600] text-[14px] text-[#1e1e1e]">
-              Federal university of technology Akure
+              {initiateBillData?.}
             </p>
-          </div>
+          </div> */}
           <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
             <p className="font-normal text-[12px] text-[#535353 ]">
               Biller/Association
             </p>
-            <p className="font-[600] text-[14px] text-[#1e1e1e]">AESCO</p>
+            <p className="font-[600] text-[14px] text-[#1e1e1e]">
+              {initiateBillData?.recipient?.association?.biller}
+            </p>
           </div>
           <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
             <p className="font-normal text-[12px] text-[#535353 ]">
               Payment Types
             </p>
-            <p className="font-[600] text-[14px] text-[#1e1e1e]">AESCO Dues</p>
+            <p className="font-[600] text-[14px] text-[#1e1e1e]">
+              {initiateBillData?.recipient?.association?.billType}
+            </p>
           </div>
           <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
             <p className="font-normal text-[12px] text-[#535353 ]">
-              Student Status
+              Student Level
             </p>
-            <p className="font-[600] text-[14px] text-[#1e1e1e]">300L</p>
+            <p className="font-[600] text-[14px] text-[#1e1e1e]">
+              {initiateBillData?.recipient?.association?.level}
+            </p>
           </div>
           <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
             <p className="font-normal text-[12px] text-[#535353 ]">
               Student Name
             </p>
             <p className="font-[600] text-[14px] text-[#1e1e1e]">
-              Emmanuel Ochigbo
+              {initiateBillData?.recipient?.association?.name}
             </p>
           </div>
           <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
             <p className="font-normal text-[12px] text-[#535353 ]">
               Matric Number
             </p>
-            <p className="font-[600] text-[14px] text-[#1e1e1e]">211223344</p>
+            <p className="font-[600] text-[14px] text-[#1e1e1e]">
+              {initiateBillData?.recipient?.association?.matricNum}
+            </p>
           </div>
           <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
             <p className="font-normal text-[12px] text-[#535353 ]">
               Email Address
             </p>
             <p className="font-[600] text-[14px] text-[#1e1e1e]">
-              emma@gmail.com
+              {initiateBillData?.recipient?.association?.email}
             </p>
           </div>
           <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
@@ -79,7 +92,7 @@ const ConfirmAssociationBill = ({ setShowScreen }) => {
               Phone Number
             </p>
             <p className="font-[600] text-[14px] text-[#1e1e1e]">
-              081556666444
+              {initiateBillData?.recipient?.association?.phoneNumber}
             </p>
           </div>
           <div className="w-full flex-col items-start gap-4 flex border-b pb-3 mb-2">
@@ -87,7 +100,7 @@ const ConfirmAssociationBill = ({ setShowScreen }) => {
               Department
             </p>
             <p className="font-[600] text-[14px] text-[#1e1e1e]">
-              Industrial Chem
+              {initiateBillData?.recipient?.association?.department}
             </p>
           </div>
         </div>
@@ -98,7 +111,7 @@ const ConfirmAssociationBill = ({ setShowScreen }) => {
               You are Paying
             </p>
             <p className="text-[#1E1E1E] font-[600] text-[14px]">
-              <FormattedPrice amount={20000} />
+              <FormattedPrice amount={parseInt(initiateBillData?.amount)} />
             </p>
           </div>
           <div className="flex justify-between items-center ">
@@ -106,7 +119,7 @@ const ConfirmAssociationBill = ({ setShowScreen }) => {
               Service charge
             </p>
             <p className="text-[#1E1E1E] font-[600] text-[14px]">
-              <FormattedPrice amount={100} />
+              <FormattedPrice amount={parseInt(initiateBillData?.fees)} />
             </p>
           </div>
 
@@ -115,7 +128,12 @@ const ConfirmAssociationBill = ({ setShowScreen }) => {
           <div className="flex justify-between items-center ">
             <p className="text-[#535353] font-[400] text-[16px]">Total</p>
             <p className="text-[#1E1E1E] font-[600] text-[16px]">
-              <FormattedPrice amount={21000} />
+              <FormattedPrice
+                amount={
+                  parseInt(initiateBillData?.amount) +
+                  parseInt(initiateBillData?.fees)
+                }
+              />
             </p>
           </div>
         </div>
@@ -159,6 +177,8 @@ const ConfirmAssociationBill = ({ setShowScreen }) => {
           </Button>{" "}
         </div>
       </div>
+
+      <ToastContainer />
     </div>
   );
 };
