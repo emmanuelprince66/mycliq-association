@@ -20,6 +20,7 @@ import { styled } from "@mui/system";
 import { useMediaQuery, useTheme } from "@mui/material";
 import ConfirmAssociationBill from "./create-association/ConfirmAssociationBill";
 import Payment from "./create-association/Payment";
+import { useLocation } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { useParams } from "react-router-dom";
@@ -43,7 +44,13 @@ const CreateAssociationBill = () => {
   const [initiateBillData, setInitiateBillData] = useState(null);
   const [level, setLevel] = useState("200");
   const theme = useTheme();
-  const { id: associationBillId } = useParams();
+  // const { id: associationBillId } = useParams();
+
+  const location = useLocation();
+
+  // Use URLSearchParams to parse the query string
+  const params = new URLSearchParams(location.search);
+  const associationBillId = params.get("id");
 
   const [showScreen, setShowScreen] = useState("create");
   const isTabletOrDesktop = useMediaQuery(theme.breakpoints.up("sm"));
