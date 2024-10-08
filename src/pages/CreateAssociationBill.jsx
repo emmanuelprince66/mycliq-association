@@ -22,6 +22,7 @@ import ConfirmAssociationBill from "./create-association/ConfirmAssociationBill"
 import Payment from "./create-association/Payment";
 import { useLocation } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { ToastContainer, toast } from "react-toastify";
 
 import { useParams } from "react-router-dom";
 import { AuthAxios } from "../helpers/axiosInstance";
@@ -180,6 +181,13 @@ const CreateAssociationBill = () => {
     }
   };
 
+  const notifyError = (msg) => {
+    toast.error(msg, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 6000, // Time in milliseconds
+    });
+  };
+
   const handleEmailBlurr = () => {
     if (!email) {
       setEmailError("Please enter email");
@@ -250,7 +258,7 @@ const CreateAssociationBill = () => {
       phoneNo === null ||
       email === null
     ) {
-      console.log("error");
+      notifyError("Please fill all fields.");
       return;
     }
 
@@ -738,6 +746,8 @@ const CreateAssociationBill = () => {
           setShowScreen={setShowScreen}
         />
       )}
+
+      <ToastContainer />
     </div>
   );
 };
