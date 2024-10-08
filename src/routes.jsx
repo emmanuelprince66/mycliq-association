@@ -63,10 +63,9 @@ const RoutesContainer = () => {
                 if (item?.case === "association") {
                   return (
                     <Route
-                      key={item.name}
-                      path={item.path}
                       index
-                      element={item.component}
+                      path="/create-association/:id?"
+                      element={<CreateAssociationBill />}
                     />
                   );
                 }
