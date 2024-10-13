@@ -3,6 +3,8 @@ import React, { useEffect } from "react";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import copy from "../../assets/images/admin/copy.svg";
 import { Box, Button, Modal } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import { useState } from "react";
 import right from "../../assets/images/admin/url/right.svg";
 import danger from "../../assets/images/admin/url/danger.svg";
@@ -10,11 +12,23 @@ import { useMediaQuery, useTheme } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { AuthAxios } from "../../helpers/axiosInstance";
 import FormattedPrice from "../../components/FormattedPrice";
+import { ToastContainer, toast } from "react-toastify";
 
 const Payment = ({ setShowScreen, initiateBillData }) => {
   console.log("ini", initiateBillData);
 
   const [isCopied, setIsCopied] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const [openDangerModal, setOpenDangerModal] = useState(false);
+
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [makePaymentData, setMakePaymentData] = useState(null);
+  const [refId, setRefId] = useState(null);
+  const theme = useTheme();
+
+  const isTabletOrDesktop = useMediaQuery(theme.breakpoints.up("sm"));
+  const closeOpenCirfirmedModal = () => setOpenConfirmModal(false);
+  const closeOpenDangerModal = () => setOpenDangerModal(false);
 
   const handleCopy = () => {
     if (initiateBillData?.bankDetails?.accountNumber) {
@@ -33,7 +47,7 @@ const Payment = ({ setShowScreen, initiateBillData }) => {
 
   const expiryDate = new Date(
     initiateBillData?.bankDetails?.expiryDate
-  ).getTime(); // Your expiry date
+  ).getTime();
   const [timeLeft, setTimeLeft] = useState({});
 
   // Function to calculate the time difference
@@ -66,17 +80,9 @@ const Payment = ({ setShowScreen, initiateBillData }) => {
     return () => clearInterval(timer);
   }, []);
 
-  const [openConfirmModal, setOpenConfirmModal] = useState(false);
-  const [openDangerModal, setOpenDangerModal] = useState(false);
-
-  const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [makePaymentData, setMakePaymentData] = useState(null);
-  const [refId, setRefId] = useState(null);
-  const theme = useTheme();
-
-  const isTabletOrDesktop = useMediaQuery(theme.breakpoints.up("sm"));
-  const closeOpenCirfirmedModal = () => setOpenConfirmModal(false);
-  const closeOpenDangerModal = () => setOpenDangerModal(false);
+  useEffect(() => {
+    setRefId(initiateBillData?.ref);
+  }, [initiateBillData]);
 
   const style = {
     position: "absolute",
@@ -130,6 +136,8 @@ const Payment = ({ setShowScreen, initiateBillData }) => {
   const handleMakePayment = () => {
     setButtonDisabled(true);
     makePaymentMutation.mutate();
+
+    console.log("hello");
   };
   return (
     <div className="md:w-[70%] w-full mx-auto p-3  md:p-3">
@@ -215,7 +223,7 @@ const Payment = ({ setShowScreen, initiateBillData }) => {
 
           <div className="flex flex-col md:flex-row w-full md:w-[70%] gap-0 md:gap-3">
             <Button
-              onClick={() => setShowScreen("payment")}
+              onClick={handleMakePayment}
               sx={{
                 background: "#333333",
                 width: "100%",
@@ -364,6 +372,7 @@ const Payment = ({ setShowScreen, initiateBillData }) => {
         </Box>
       </Modal>
       {/* Modal ends */}
+      <ToastContainer />
     </div>
   );
 };

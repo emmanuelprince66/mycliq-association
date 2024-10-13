@@ -74,7 +74,8 @@ const TableCom = () => {
     endDate
   );
 
-  console.log(startDate, endDate);
+  console.log("startDate", newStartDate);
+  console.log("endDate", newEndDate);
 
   const [totalDeposits, setTotalDeposits] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
