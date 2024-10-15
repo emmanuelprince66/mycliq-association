@@ -56,8 +56,8 @@ const Transaction = () => {
     <Box
       sx={{
         width: "100%",
-        maxHeight: "80vh",
-        overflowY: "scroll",
+        maxHeight: "100vh",
+        overflowY: "auto",
       }}
     >
       <Box

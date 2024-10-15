@@ -79,6 +79,8 @@ const TableStudents = () => {
   const handleClose1 = () => setOpen1(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showPaid, setShowPaid] = useState("");
+
+  console.log("s", showPaid);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
@@ -322,14 +324,12 @@ const TableStudents = () => {
           }}
         >
           <Button
-            variant={showPaid === "transaction" ? "contained" : "outlined"}
+            variant={showPaid === null ? "contained" : "outlined"}
             onClick={() => handleSortByStatus(null)}
             style={{
               marginRight: "5px",
               backgroundColor:
-                showPaid === "transaction" || showPaid === ""
-                  ? "#DC0019"
-                  : "white",
+                showPaid === null || showPaid === null ? "#333333" : "white",
               padding: "8px 24px 8px 24px",
               borderRadius: "16px",
               display: "flex",
@@ -339,11 +339,9 @@ const TableStudents = () => {
               fontSize: "16px",
               fontWeight: "400",
               color:
-                showPaid === "transaction" || showPaid === ""
-                  ? "#fff"
-                  : "#828282",
+                showPaid === null || showPaid === null ? "#fff" : "#828282",
               border:
-                showPaid === "transaction" || showPaid === ""
+                showPaid === null || showPaid === null
                   ? ""
                   : "1px solid #E0E0E0",
             }}
@@ -362,7 +360,7 @@ const TableStudents = () => {
             style={{
               marginRight: "5px",
               color: showPaid === "paid" ? "white" : "#828282",
-              backgroundColor: showPaid === "paid" ? "#DC0019" : "white",
+              backgroundColor: showPaid === "paid" ? "#333333" : "white",
               border: showPaid === "paid" ? "" : "1px solid #E0E0E0",
               padding: "8px 24px 8px 24px",
               borderRadius: "16px",
@@ -386,7 +384,7 @@ const TableStudents = () => {
             onClick={() => handleSortByStatus("verified")}
             style={{
               color: showPaid === "verified" ? "white" : "#828282",
-              backgroundColor: showPaid === "verified" ? "#dc0019" : "#fff",
+              backgroundColor: showPaid === "verified" ? "#333333" : "#fff",
               border: showPaid === "verified" ? "" : "1px solid #E0E0E0",
 
               padding: "8px 24px 8px 24px",
@@ -441,7 +439,7 @@ const TableStudents = () => {
                       <Box
                         sx={{
                           textTransform: "capitalize",
-                          color: "#DC0019",
+                          color: "#333333",
                           background:
                             item.status === "paid" ? "#EBFFF3" : "#EBF3FF",
                           color: item.status === "paid" ? "#1E854A" : "#1367D8",
@@ -469,7 +467,7 @@ const TableStudents = () => {
                         variant="outlined"
                         sx={{
                           textTransform: "capitalize",
-                          color: "#DC0019",
+                          color: "#333333",
                           fontWeight: "600",
                           fontSize: "14px",
                           border: "1px solid #E0E0E0",
