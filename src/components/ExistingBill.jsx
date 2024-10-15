@@ -377,14 +377,14 @@ const ExistingBill = () => {
                   <div className="w-full cursor-pointer">
                     <div className="flex items-center gap-2 ">
                       <p className="text-[#1e1e1e]">URL:</p>
-                      <p className="text-[#1e1e1e]">{`https://mycliq-association-two.vercel.app/create-association?id=${item?.id}`}</p>{" "}
+                      <p className="text-[#1e1e1e]">{`https://association.mycliq.tech/create-association?id=${item?.id}`}</p>{" "}
                     </div>
                     {/* Display the dynamic URL */}
                     <button
                       className="bg-blue-500 text-white p-1 text-[10px] rounded-md mt-2 hover:bg-blue-600"
                       onClick={() =>
                         copyToClipboard(
-                          `https://mycliq-association-two.vercel.app/create-association?id=${item?.id}`,
+                          `https://association.mycliq.tech/create-association?id=${item?.id}`,
                           item?.id
                         )
                       }

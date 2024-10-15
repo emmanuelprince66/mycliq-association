@@ -409,7 +409,7 @@ const WithdrawFunds = () => {
                 type="submit"
                 disabled={false}
                 sx={{
-                  background: "#dc0019",
+                  background: "#333333",
                   padding: "10px",
                   borderRadius: "8px",
                   mt: "2rem",
@@ -418,7 +418,7 @@ const WithdrawFunds = () => {
                   width: "100%",
                   color: "#fff",
                   "&:hover": {
-                    backgroundColor: "#dc0019",
+                    backgroundColor: "#333333",
                   },
                 }}
               >
@@ -783,13 +783,13 @@ const WithdrawFunds = () => {
                   width: "100%",
                   padding: "10px",
                   borderRadius: "8px",
-                  border: "1px solid #dc0019",
+                  border: "1px solid #333333",
                   textTransform: "capitalize",
 
-                  color: "#dc0019",
-                  borderColor: "#dc0019",
+                  color: "#333333",
+                  borderColor: "#333333",
                   "&:hover": {
-                    borderColor: "#dc0019",
+                    borderColor: "#333333",
                   },
                 }}
                 variant="outlined"
@@ -802,14 +802,14 @@ const WithdrawFunds = () => {
                   initiateBankWithdrawalMutation.isLoading || buttonDisabled
                 }
                 sx={{
-                  background: "#dc0019",
+                  background: "#333333",
                   width: "100%",
                   padding: "10px",
                   borderRadius: "8px",
                   textTransform: "capitalize",
                   color: "#fff",
                   "&:hover": {
-                    backgroundColor: "#dc0019",
+                    backgroundColor: "#333333",
                   },
                 }}
               >

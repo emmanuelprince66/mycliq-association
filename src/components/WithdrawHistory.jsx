@@ -314,7 +314,6 @@ const WithdrawHistory = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
@@ -325,9 +324,8 @@ const WithdrawHistory = () => {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
       {/* Moda;l for detailsl */}
-
+      open={open1}
       <Modal
-        open={open1}
         onClose={handleClose1}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"

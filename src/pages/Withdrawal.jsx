@@ -57,7 +57,7 @@ const Withdrawal = () => {
                     sx={{
                       height: "40px",
                       minWidth: "4px",
-                      background: showCreateBill && "#DC0019",
+                      background: showCreateBill && "#333333",
                       borderTopRightRadius: "8px",
                       borderBottomRightRadius: "8px",
                     }}
@@ -71,7 +71,7 @@ const Withdrawal = () => {
                     width: "100%",
                     alignItems: "center",
                     gap: "12px",
-                    color: showCreateBill ? "#DC0019" : "#828282",
+                    color: showCreateBill ? "#333333" : "#828282",
                   }}
                 >
                   <ArrowOutwardRoundedIcon />
@@ -108,7 +108,7 @@ const Withdrawal = () => {
                     sx={{
                       height: "40px",
                       minWidth: "4px",
-                      background: !showCreateBill && "#DC0019",
+                      background: !showCreateBill && "#333333",
                       borderTopRightRadius: "8px",
                       borderBottomRightRadius: "8px",
                     }}
@@ -123,7 +123,7 @@ const Withdrawal = () => {
                     alignItems: "center",
                     gap: "10px",
                     ml: !showCreateBill ? "15px" : "20px",
-                    color: !showCreateBill ? "#DC0019" : "#828282",
+                    color: !showCreateBill ? "#333333" : "#828282",
                   }}
                 >
                   <HistoryRoundedIcon />
