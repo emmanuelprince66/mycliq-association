@@ -157,6 +157,7 @@ const ExistingBill = () => {
     ? ExistingBills?.records?.filter((item) => item?.isActive === true)
     : [];
 
+  console.log("soerted", sortedData);
   const handleOpenIniModal = (id) => {
     setOpen2(true);
     setUrlId(id);
