@@ -132,6 +132,7 @@ const WithdrawFunds = () => {
 
         return response.data;
       } catch (error) {
+        notifyError(error.response.data.message);
         console.log(error);
         throw new Error(error.response.data.message);
       }
