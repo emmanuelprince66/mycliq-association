@@ -6,6 +6,7 @@ import QRCode from "react-qr-code";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import logo from "../../assets/images/admin/url/logo.svg";
+
 import {
   Card,
   Box,
@@ -200,6 +201,9 @@ const Receipt = ({
 
     return `${month}-${day}-${year} at ${hour}:${minute} ${ampm}`;
   }
+
+  //   const qrcodeUrl = receiptData ? receiptData : ""
+
   return (
     <Box
       sx={{
@@ -665,6 +669,34 @@ const Receipt = ({
                         textAlign: "left",
                       }}
                     >
+                      {receiptData?.recipientDetails?.association?.biller}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      mb: "0.2rem",
+                      gap: "41px",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "10px",
+                        fontWeight: 400,
+                        color: "#727272",
+                      }}
+                    >
+                      Payment Type
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: "10px",
+                        fontWeight: 600,
+
+                        textAlign: "left",
+                      }}
+                    >
                       {receiptData?.recipientDetails?.association?.billType}
                     </Typography>
                   </Box>
@@ -673,10 +705,11 @@ const Receipt = ({
                       display: "flex",
                       alignItems: "center",
                       mb: "0.2rem",
-                      gap: "18px",
+                      gap: "10px",
                     }}
                   >
                     <Typography
+                      className="w-[144px] md:w-[100px]"
                       sx={{
                         fontSize: "10px",
                         fontWeight: 400,
@@ -690,6 +723,8 @@ const Receipt = ({
                         fontSize: "10px",
                         fontWeight: 600,
                         textAlign: "left",
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
                       }}
                     >
                       {receiptData?.description}

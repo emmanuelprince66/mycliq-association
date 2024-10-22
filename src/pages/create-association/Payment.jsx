@@ -348,7 +348,7 @@ const Payment = ({ setShowScreen, initiateBillData }) => {
               >
                 <img src={danger} alt="danger" />
                 <p className="texx-[#1e1e1e] text-[20px] font-[600]">
-                  Payment Failed
+                  Payment not confirmed , Retry.
                 </p>
                 <div className="flex flex-col md:flex-row w-full gap-3 mt-4">
                   <Button
