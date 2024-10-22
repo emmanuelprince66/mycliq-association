@@ -27,6 +27,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { AuthAxios } from "../helpers/axiosInstance";
 import { common } from "@mui/material/colors";
+import Receipt from "./create-association/Reciept";
 const CreateAssociationBill = () => {
   const [studentName, setStudentName] = useState(null);
   const [nameError, setNameError] = useState("");

@@ -51,7 +51,6 @@ async function refreshToken() {
       }
     );
 
-    console.log("Token refreshed:", response.data);
     setCookie("authToken", response.data.access_token);
     if (response.data.refreshToken) {
       setCookie("refreshToken", response.data.refreshToken);
@@ -111,7 +110,6 @@ AuthAxios.interceptors.request.use(
   async (config) => {
     const token = getCookie("authToken");
 
-    console.log(token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
