@@ -347,7 +347,7 @@ const Payment = ({ setShowScreen, initiateBillData }) => {
                 className="flex flex-col gap-4 items-center justify-center"
               >
                 <img src={danger} alt="danger" />
-                <p className="texx-[#1e1e1e] text-[20px] font-[600]">
+                <p className="texx-[#1e1e1e] text-[20px] font-[600] text-center">
                   Payment not confirmed , Retry.
                 </p>
                 <div className="flex flex-col md:flex-row w-full gap-3 mt-4">
