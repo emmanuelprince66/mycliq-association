@@ -202,7 +202,9 @@ const Receipt = ({
     return `${month}-${day}-${year} at ${hour}:${minute} ${ampm}`;
   }
 
-  //   const qrcodeUrl = receiptData ? receiptData : ""
+  const qrcodeUrl = receiptData
+    ? `${receiptData?.entityId}_${receiptData?.id}_association`
+    : "";
 
   return (
     <Box
@@ -890,7 +892,7 @@ const Receipt = ({
                         <QRCode
                           size={256}
                           style={{ height: "7rem", width: "7rem" }}
-                          value={receiptData?.ref}
+                          value={qrcodeUrl}
                           viewBox={`0 0 256 256`}
                         />
                       )}
