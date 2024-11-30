@@ -140,151 +140,167 @@ const Performance = () => {
     },
   ];
   return (
-    <Box
-      sx={{
-        p: "1rem",
-      }}
-    >
-      <Box
-        sx={{
-          my: "1rem",
-          width: "100%",
-          display: "flex",
-          justifyContent: "flex-end",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            marginLeft: "auto",
-            justifyContent: "flex-end",
-            width: "fit-content",
-            gap: "1em",
-            alignItems: "center",
+    <>
+      <div style={{ textAlign: "left", marginTop: "2em", padding: "1em" }}>
+        <h1
+          style={{
+            fontSize: "2rem",
+            fontWeight: "bold",
+            marginLeft: "0em",
+            marginBottom: "1rem",
+            color: "grey",
+            animation: "fadeIn 2s forwards",
           }}
         >
-          <Typography
-            sx={{
-              fontWeight: "400",
-              fontSize: "16px",
-              color: "#828282",
-            }}
-          >
-            Showing Results for
-          </Typography>
-          <div className="border flex ml-auto border-grey_1 w-fit rounded-[8px] ">
-            <Button
-              sx={{ color: "#4F4F4F" }}
-              startIcon={<CalendarMonthOutlined />}
-              onClick={openDateRange}
-            >
-              {" "}
-              {modStartDate}- {modEndDate}
-            </Button>
-          </div>
-        </Box>
-        {dateVisible && (
-          <div className="absolute flex flex-col bg-white z-[2] mt-[40px] shadow-lg p-2 rounded-[8px] right-0">
-            <DateRangePicker
-              ranges={[selectedRange]}
-              onShownDateChange={showChange}
-              onChange={handleSelect}
-            />
+          This is coming Soon!
+        </h1>
+      </div>
+    </>
+    // <Box
+    //   sx={{
+    //     p: "1rem",
+    //   }}
+    // >
+    //   <Box
+    //     sx={{
+    //       my: "1rem",
+    //       width: "100%",
+    //       display: "flex",
+    //       justifyContent: "flex-end",
+    //     }}
+    //   >
+    //     <Box
+    //       sx={{
+    //         display: "flex",
+    //         marginLeft: "auto",
+    //         justifyContent: "flex-end",
+    //         width: "fit-content",
+    //         gap: "1em",
+    //         alignItems: "center",
+    //       }}
+    //     >
+    //       <Typography
+    //         sx={{
+    //           fontWeight: "400",
+    //           fontSize: "16px",
+    //           color: "#828282",
+    //         }}
+    //       >
+    //         Showing Results for
+    //       </Typography>
+    //       <div className="border flex ml-auto border-grey_1 w-fit rounded-[8px] ">
+    //         <Button
+    //           sx={{ color: "#4F4F4F" }}
+    //           startIcon={<CalendarMonthOutlined />}
+    //           onClick={openDateRange}
+    //         >
+    //           {" "}
+    //           {modStartDate}- {modEndDate}
+    //         </Button>
+    //       </div>
+    //     </Box>
+    //     {dateVisible && (
+    //       <div className="absolute flex flex-col bg-white z-[2] mt-[40px] shadow-lg p-2 rounded-[8px] right-0">
+    //         <DateRangePicker
+    //           ranges={[selectedRange]}
+    //           onShownDateChange={showChange}
+    //           onChange={handleSelect}
+    //         />
 
-            <button
-              onClick={handleDateChange}
-              className="bg-primary_red_2 hover:bg-primary_red_3 p-2 w-1/5 ml-auto rounded-[8px] text-white"
-            >
-              {" "}
-              Done{" "}
-            </button>
-          </div>
-        )}
-      </Box>
+    //         <button
+    //           onClick={handleDateChange}
+    //           className="bg-primary_red_2 hover:bg-primary_red_3 p-2 w-1/5 ml-auto rounded-[8px] text-white"
+    //         >
+    //           {" "}
+    //           Done{" "}
+    //         </button>
+    //       </div>
+    //     )}
+    //   </Box>
 
-      <Box
-        sx={{
-          display: "flex",
-          mt: "3rem",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
-        <Typography
-          sx={{
-            fontWeight: "500",
-            fontSize: "20px",
-            color: "#000",
-          }}
-        >
-          Attendants’ Performance
-        </Typography>
+    //   <Box
+    //     sx={{
+    //       display: "flex",
+    //       mt: "3rem",
+    //       alignItems: "center",
+    //       justifyContent: "space-between",
+    //       width: "100%",
+    //     }}
+    //   >
+    //     <Typography
+    //       sx={{
+    //         fontWeight: "500",
+    //         fontSize: "20px",
+    //         color: "#000",
+    //       }}
+    //     >
+    //       Attendants’ Performance
+    //     </Typography>
 
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-          }}
-        >
-          <img src={download} alt="d-icon" />
-          <Typography
-            sx={{
-              fontWeight: "400",
-              fontSize: "16px",
-              color: "#dc0019",
-            }}
-          >
-            Download
-          </Typography>
-        </Box>
-      </Box>
+    //     <Box
+    //       sx={{
+    //         display: "flex",
+    //         alignItems: "center",
+    //         gap: "10px",
+    //       }}
+    //     >
+    //       <img src={download} alt="d-icon" />
+    //       <Typography
+    //         sx={{
+    //           fontWeight: "400",
+    //           fontSize: "16px",
+    //           color: "#dc0019",
+    //         }}
+    //       >
+    //         Download
+    //       </Typography>
+    //     </Box>
+    //   </Box>
 
-      <Box
-        sx={{
-          width: "100%",
-          mt: "1rem",
-        }}
-      >
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650, padding: "8px" }}>
-            <TableHead
-              sx={{
-                background: "#F8F8F8",
-              }}
-            >
-              <TableRow>
-                <TableCell>S/N</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Total Successfull Transactions</TableCell>
-                <TableCell>Value&#x20A6;</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {dummyData?.map((item, i) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.id}</TableCell>
-                  <TableCell>{item.nm}</TableCell>
-                  <TableCell>{item.success}</TableCell>
-                  <TableCell>{item.price}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+    //   <Box
+    //     sx={{
+    //       width: "100%",
+    //       mt: "1rem",
+    //     }}
+    //   >
+    //     <TableContainer component={Paper}>
+    //       <Table sx={{ minWidth: 650, padding: "8px" }}>
+    //         <TableHead
+    //           sx={{
+    //             background: "#F8F8F8",
+    //           }}
+    //         >
+    //           <TableRow>
+    //             <TableCell>S/N</TableCell>
+    //             <TableCell>Name</TableCell>
+    //             <TableCell>Total Successfull Transactions</TableCell>
+    //             <TableCell>Value&#x20A6;</TableCell>
+    //           </TableRow>
+    //         </TableHead>
+    //         <TableBody>
+    //           {dummyData?.map((item, i) => (
+    //             <TableRow key={item.id}>
+    //               <TableCell>{item.id}</TableCell>
+    //               <TableCell>{item.nm}</TableCell>
+    //               <TableCell>{item.success}</TableCell>
+    //               <TableCell>{item.price}</TableCell>
+    //             </TableRow>
+    //           ))}
+    //         </TableBody>
+    //       </Table>
+    //     </TableContainer>
 
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={dummyData?.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Box>
-    </Box>
+    //     <TablePagination
+    //       rowsPerPageOptions={[5, 10, 25]}
+    //       component="div"
+    //       count={dummyData?.length}
+    //       rowsPerPage={rowsPerPage}
+    //       page={page}
+    //       onPageChange={handleChangePage}
+    //       onRowsPerPageChange={handleChangeRowsPerPage}
+    //     />
+    //   </Box>
+    // </Box>
   );
 };
 

@@ -1,19 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/create-association/:id",
+      "source": "/create-association/:id?",
       "destination": "/index.html"
-    }
-  ],
-  "headers": [
+    },
     {
-      "source": "/(.*).(js|css|svg|png|jpg|woff2?|ttf)",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=UTF-8"
-        }
-      ]
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }

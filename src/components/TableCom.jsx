@@ -74,7 +74,8 @@ const TableCom = () => {
     endDate
   );
 
-  console.log(startDate, endDate);
+  console.log("startDate", newStartDate);
+  console.log("endDate", newEndDate);
 
   const [totalDeposits, setTotalDeposits] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -225,7 +226,7 @@ const TableCom = () => {
             </Box>
             <Typography
               sx={{
-                fomtWeight: "500",
+                fontWeight: "500",
                 fontSize: "14px",
                 color: "#4F4F4F",
               }}
@@ -248,7 +249,7 @@ const TableCom = () => {
               </Typography>
               <Typography
                 sx={{
-                  fomtWeight: "600",
+                  fontWeight: "600",
                   fontSize: "24px",
                   color: "#1E1E1E",
                 }}
@@ -274,7 +275,7 @@ const TableCom = () => {
               </Typography>
               <Typography
                 sx={{
-                  fomtWeight: "600",
+                  fontWeight: "600",
                   fontSize: "24px",
                   color: "#1E1E1E",
                 }}
@@ -324,7 +325,7 @@ const TableCom = () => {
               </Box>
               <Typography
                 sx={{
-                  fomtWeight: "500",
+                  fontWeight: "500",
                   fontSize: "14px",
                   color: "#4F4F4F",
                 }}
@@ -337,7 +338,7 @@ const TableCom = () => {
             <Box className="flex gap-2 items-center cursor-pointer">
               <Typography
                 sx={{
-                  fomtWeight: "400",
+                  fontWeight: "400",
                   fontSize: "13px",
                   color: "#dc0019",
                 }}
@@ -363,7 +364,7 @@ const TableCom = () => {
               </Typography>
               <Typography
                 sx={{
-                  fomtWeight: "600",
+                  fontWeight: "600",
                   fontSize: "24px",
                   color: "#1E1E1E",
                 }}
@@ -389,7 +390,7 @@ const TableCom = () => {
               </Typography>
               <Typography
                 sx={{
-                  fomtWeight: "600",
+                  fontWeight: "600",
                   fontSize: "24px",
                   color: "#1E1E1E",
                 }}
@@ -431,7 +432,7 @@ const TableCom = () => {
             </Box>
             <Typography
               sx={{
-                fomtWeight: "500",
+                fontWeight: "500",
                 fontSize: "14px",
                 color: "#4F4F4F",
               }}
@@ -445,7 +446,7 @@ const TableCom = () => {
           <Box>
             <Typography
               sx={{
-                fomtWeight: "600",
+                fontWeight: "600",
                 fontSize: "24px",
                 color: "##1E1E1E",
               }}
@@ -481,6 +482,7 @@ const TableCom = () => {
                 <TableCell>Transaction ID</TableCell>
                 <TableCell>User</TableCell>
                 <TableCell>Transaction Type</TableCell>
+                <TableCell>Sub Type</TableCell>
                 <TableCell>Amount(N)</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Action</TableCell>
@@ -569,6 +571,7 @@ const TableCom = () => {
                         : item?.recipientDetails?.accountName}
                     </TableCell>
                     <TableCell>{item?.type}</TableCell>
+                    <TableCell>{item?.subType}</TableCell>
                     <TableCell>{item?.amount}</TableCell>
                     <TableCell>
                       <Box

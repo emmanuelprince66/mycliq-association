@@ -31,7 +31,8 @@ const myRoutes = [
   { component: <ResetPassword />, path: "/reset", name: "Reset" },
   {
     component: <CreateAssociationBill />,
-    path: "/create-association/:id?",
+    path: "/create-association",
+    case: "association",
     name: "Cassociation",
   },
   { component: <Attendants />, path: "/attendants", name: "Attendants" },
@@ -58,19 +59,16 @@ const RoutesContainer = () => {
         <Router>
           <Routes>
             {myRoutes.map((item) => {
-              if (
-                item.path === "/" ||
-                item.path === "/create-association/:id?"
-              ) {
-                return (
-                  <Route
-                    key={item.name}
-                    path={item.path}
-                    element={item.component}
-                  />
-                );
-              } else {
-                // For other pages, wrap with AuthProvider
+              if (item.path !== "/") {
+                if (item?.case === "association") {
+                  return (
+                    <Route
+                      key={item.name}
+                      path={item.path}
+                      element={item.component}
+                    />
+                  );
+                }
                 const ComponentWithAuth = (
                   <AuthProvider>
                     <Mainlayout component={item.component} />
@@ -84,6 +82,14 @@ const RoutesContainer = () => {
                   />
                 );
               }
+
+              return (
+                <Route
+                  key={item.name}
+                  path={item.path}
+                  element={item.component}
+                />
+              );
             })}
             <Route index path="/f-password" element={<ForgetPassword />} />
           </Routes>

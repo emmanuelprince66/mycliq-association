@@ -20,11 +20,14 @@ import { styled } from "@mui/system";
 import { useMediaQuery, useTheme } from "@mui/material";
 import ConfirmAssociationBill from "./create-association/ConfirmAssociationBill";
 import Payment from "./create-association/Payment";
+import { useLocation } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { ToastContainer, toast } from "react-toastify";
 
 import { useParams } from "react-router-dom";
 import { AuthAxios } from "../helpers/axiosInstance";
 import { common } from "@mui/material/colors";
+import Receipt from "./create-association/Reciept";
 const CreateAssociationBill = () => {
   const [studentName, setStudentName] = useState(null);
   const [nameError, setNameError] = useState("");
@@ -34,15 +37,22 @@ const CreateAssociationBill = () => {
   const [matricError, setMatricError] = useState("");
   const [email, setEmail] = useState(null);
   const [price, setPrice] = useState(null);
-  const [comAmt, setComAmt] = useState(100);
+  const [comAmt, setComAmt] = useState(50);
   const [emailError, setEmailError] = useState("");
   const [phoneNo, setPhoneNo] = useState(null);
   const [phoneError, setPhoneError] = useState("");
   const [studentType, setStudentType] = useState("fresher");
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [initiateBillData, setInitiateBillData] = useState(null);
   const [level, setLevel] = useState("200");
   const theme = useTheme();
-  const { id: associationBillId } = useParams();
+  // const { id: associationBillId } = useParams();
+
+  const location = useLocation();
+
+  // Use URLSearchParams to parse the query string
+  const params = new URLSearchParams(location.search);
+  const associationBillId = params.get("id");
 
   const [showScreen, setShowScreen] = useState("create");
   const isTabletOrDesktop = useMediaQuery(theme.breakpoints.up("sm"));
@@ -51,6 +61,11 @@ const CreateAssociationBill = () => {
       color: "#333333",
     },
   }));
+
+  useEffect(() => {
+    console.log("CreateAssociationBill component mounted");
+  }, []);
+
   const handleStudentTypeChange = (event) => {
     setStudentType(event.target.value);
     if (event.target.value === "fresher") {
@@ -167,6 +182,13 @@ const CreateAssociationBill = () => {
     }
   };
 
+  const notifyError = (msg) => {
+    toast.error(msg, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 6000, // Time in milliseconds
+    });
+  };
+
   const handleEmailBlurr = () => {
     if (!email) {
       setEmailError("Please enter email");
@@ -209,8 +231,9 @@ const CreateAssociationBill = () => {
       }
     },
     onSuccess: (data) => {
-      console.log("data-ffr", data);
-      // setShowScreen("confirm")
+      console.log("data-ffr", data?.data);
+      setInitiateBillData(data?.data);
+      setShowScreen("confirm");
       setButtonDisabled(false);
     },
     onError: (error) => {
@@ -236,7 +259,7 @@ const CreateAssociationBill = () => {
       phoneNo === null ||
       email === null
     ) {
-      console.log("error");
+      notifyError("Please fill all fields.");
       return;
     }
 
@@ -250,7 +273,7 @@ const CreateAssociationBill = () => {
   return (
     <div className="w-full">
       {showScreen === "create" && (
-        <div className="md:w-[70%] w-full mx-auto p-3  md:p-3">
+        <div className="md:w-[70%] w-full mx-auto p-3 pr-9  md:p-3">
           {assBLoading ? (
             <CircularProgress size="1.2rem" sx={{ color: "#ff7f00" }} />
           ) : (
@@ -270,10 +293,10 @@ const CreateAssociationBill = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col items-start gap-3 mt-8">
-                <Grid container spacing={2} sx={{ width: "100%" }}>
+              <div className="flex flex-col items-start gap-3 mt-8 w-full">
+                <Grid container spacing={2} sx={{ width: "100%", mx: "auto" }}>
                   <Grid item xs={12} md={6}>
-                    <FormControl component="fieldset" sx={{ padding: "10px" }}>
+                    <FormControl component="fieldset">
                       <Typography
                         htmlFor="input"
                         sx={{
@@ -678,7 +701,6 @@ const CreateAssociationBill = () => {
                   <Grid item xs={12} md={6} lg={6}>
                     <Button
                       onClick={handleInitiatePayment}
-                      disabled={buttonDisabled}
                       sx={{
                         background: "#333333",
                         width: "100%",
@@ -713,10 +735,20 @@ const CreateAssociationBill = () => {
       )}
 
       {showScreen === "confirm" && (
-        <ConfirmAssociationBill setShowScreen={setShowScreen} />
+        <ConfirmAssociationBill
+          initiateBillData={initiateBillData}
+          setShowScreen={setShowScreen}
+        />
       )}
 
-      {showScreen === "payment" && <Payment setShowScreen={setShowScreen} />}
+      {showScreen === "payment" && (
+        <Payment
+          initiateBillData={initiateBillData}
+          setShowScreen={setShowScreen}
+        />
+      )}
+
+      <ToastContainer />
     </div>
   );
 };

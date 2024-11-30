@@ -7,7 +7,7 @@ import { getCookie, setCookie } from "../utils/cookieAuth";
 // });
 
 export const AuthAxios = Axios.create({
-  baseURL: "https://mycliq-backend-1.onrender.com/api",
+  baseURL: "https://api.mycliq.tech/api",
   withCredentials: false,
 });
 
@@ -18,7 +18,7 @@ export const AuthAxios = Axios.create({
 // });
 
 export const BaseAxios = Axios.create({
-  baseURL: "https://mycliq-backend-1.onrender.com/api",
+  baseURL: "https://api.mycliq.tech/api",
   withCredentials: false,
 });
 
@@ -51,7 +51,6 @@ async function refreshToken() {
       }
     );
 
-    console.log("Token refreshed:", response.data);
     setCookie("authToken", response.data.access_token);
     if (response.data.refreshToken) {
       setCookie("refreshToken", response.data.refreshToken);
@@ -111,7 +110,6 @@ AuthAxios.interceptors.request.use(
   async (config) => {
     const token = getCookie("authToken");
 
-    console.log(token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
